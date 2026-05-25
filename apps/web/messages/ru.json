@@ -235,5 +235,39 @@
     "errorInvalidCredentials": "Неверный email или пароль",
     "errorEmailTaken": "Этот email уже используется",
     "errorGeneric": "Ошибка. Попробуйте ещё раз."
+  },
+  "settings": {
+    "title": "Настройки",
+    "store": "Магазин",
+    "storeDesc": "Название, локаль, тариф",
+    "profile": "Профиль",
+    "profileDesc": "Личные данные и пароль",
+    "ownerOnly": "Доступно только владельцу",
+    "storeNameLabel": "Название магазина",
+    "localeLabel": "Язык интерфейса по умолчанию",
+    "localeRu": "Русский",
+    "localeUz": "O'zbek",
+    "subscriptionPlan": "Тариф",
+    "currency": "Валюта",
+    "saved": "Сохранено ✓",
+    "yourProfile": "Профиль",
+    "name": "Имя",
+    "email": "Email",
+    "phone": "Телефон",
+    "role": "Роль",
+    "changePasswordTitle": "Сменить пароль",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "passwordChanged": "Пароль изменён ✓",
+    "errorWrongPassword": "Текущий пароль неверный"
+  },
+  "ordersExtra": {
+    "dateFrom": "С даты",
+    "dateTo": "По дату",
+    "clearDates": "Сбросить даты",
+    "exportCsv": "CSV",
+    "exportXlsx": "Excel",
+    "export": "Экспорт",
+    "exportFailed": "Не удалось скачать"
   }
 }

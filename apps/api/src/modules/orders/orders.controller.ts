@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,8 +10,10 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { CurrentUser } from '../../common/auth/current-user.decorator';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import type { JwtPayload } from '../../common/auth/jwt-payload.type';
@@ -20,16 +23,47 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { ListOrdersDto } from './dto/list-orders.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { OrdersExportService } from './orders.export';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
 export class OrdersController {
-  constructor(private readonly orders: OrdersService) {}
+  constructor(
+    private readonly orders: OrdersService,
+    private readonly exportService: OrdersExportService,
+  ) {}
 
   @Get()
   list(@CurrentUser() user: JwtPayload, @Query() query: ListOrdersDto) {
     return this.orders.list(user.storeId, query);
+  }
+
+  // IMPORTANT: declared before ':id' so the literal route matches first.
+  @Get('export')
+  async export(
+    @CurrentUser() user: JwtPayload,
+    @Query() query: ListOrdersDto,
+    @Query('format') format: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    if (format !== 'csv' && format !== 'xlsx') {
+      throw new BadRequestException('format must be csv or xlsx');
+    }
+    const { buffer, filename } =
+      format === 'xlsx'
+        ? await this.exportService.exportXlsx(user.storeId, query)
+        : await this.exportService.exportCsv(user.storeId, query);
+    const contentType =
+      format === 'xlsx'
+        ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        : 'text/csv; charset=utf-8';
+    res.set({
+      'Content-Type': contentType,
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': buffer.length.toString(),
+    });
+    res.send(buffer);
   }
 
   @Get(':id')

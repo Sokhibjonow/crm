@@ -4,7 +4,12 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { formatMoney } from '@/lib/format';
-import { listOrders, type OrderListResult, type OrderStatus } from '@/lib/orders';
+import {
+  downloadOrdersExport,
+  listOrders,
+  type OrderListResult,
+  type OrderStatus,
+} from '@/lib/orders';
 import { OrderStatusBadge, PaymentStatusBadge } from './_components/status-badge';
 
 const PAGE_SIZE = 25;
@@ -24,28 +29,36 @@ interface Props {
 export default function OrdersPage({ params: { locale } }: Props) {
   const t = useTranslations('orders');
   const tStatuses = useTranslations('orders.statusValues');
+  const tExtra = useTranslations('ordersExtra');
 
   const [q, setQ] = useState('');
   const [queryQ, setQueryQ] = useState('');
   const [status, setStatus] = useState<OrderStatus | ''>('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
   const [data, setData] = useState<OrderListResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState<'csv' | 'xlsx' | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  const filters = {
+    q: queryQ || undefined,
+    status: status || undefined,
+    dateFrom: dateFrom || undefined,
+    dateTo: dateTo || undefined,
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await listOrders({
-        q: queryQ || undefined,
-        status: status || undefined,
-        page,
-        take: PAGE_SIZE,
-      });
+      const res = await listOrders({ ...filters, page, take: PAGE_SIZE });
       setData(res);
     } finally {
       setLoading(false);
     }
-  }, [queryQ, status, page]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryQ, status, dateFrom, dateTo, page]);
 
   useEffect(() => {
     load();
@@ -55,6 +68,30 @@ export default function OrdersPage({ params: { locale } }: Props) {
     e.preventDefault();
     setPage(1);
     setQueryQ(q);
+  }
+
+  function onDateChange(which: 'from' | 'to', value: string) {
+    setPage(1);
+    if (which === 'from') setDateFrom(value);
+    else setDateTo(value);
+  }
+
+  function clearDates() {
+    setPage(1);
+    setDateFrom('');
+    setDateTo('');
+  }
+
+  async function onExport(format: 'csv' | 'xlsx') {
+    setExporting(format);
+    setExportError(null);
+    try {
+      await downloadOrdersExport(filters, format);
+    } catch {
+      setExportError(tExtra('exportFailed'));
+    } finally {
+      setExporting(null);
+    }
   }
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.take)) : 1;
@@ -97,6 +134,57 @@ export default function OrdersPage({ params: { locale } }: Props) {
           ))}
         </select>
       </div>
+
+      <div className="mt-3 flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1 text-xs text-slate-500">
+          {tExtra('dateFrom')}
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => onDateChange('from', e.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-slate-500">
+          {tExtra('dateTo')}
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => onDateChange('to', e.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900"
+          />
+        </label>
+        {(dateFrom || dateTo) && (
+          <button
+            type="button"
+            onClick={clearDates}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50"
+          >
+            {tExtra('clearDates')}
+          </button>
+        )}
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-xs text-slate-500">{tExtra('export')}:</span>
+          <button
+            type="button"
+            onClick={() => onExport('csv')}
+            disabled={exporting !== null}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-60"
+          >
+            {exporting === 'csv' ? '…' : tExtra('exportCsv')}
+          </button>
+          <button
+            type="button"
+            onClick={() => onExport('xlsx')}
+            disabled={exporting !== null}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-60"
+          >
+            {exporting === 'xlsx' ? '…' : tExtra('exportXlsx')}
+          </button>
+        </div>
+      </div>
+
+      {exportError && <p className="mt-2 text-sm text-red-600">{exportError}</p>}
 
       <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
         <table className="w-full text-left text-sm">

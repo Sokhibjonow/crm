@@ -2,6 +2,8 @@
 
 Retail CRM SaaS for small/medium businesses in Uzbekistan (Instagram/Telegram shops, clothing, electronics, cosmetics). Working name: **SavdoCRM**.
 
+**Client priority:** web is the product, **mobile app is the planned next surface**, Telegram bot is an internal notification feature (not the headline). Keep the API mobile-friendly — JWT bearer auth, pure JSON REST, no SSR-only data flows.
+
 ## Repo layout (npm workspaces)
 
 ```

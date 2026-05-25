@@ -7,6 +7,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   role: UserRole;
   storeId: string;
   storeName: string;
@@ -29,6 +30,16 @@ export interface LoginInput {
   password: string;
 }
 
+export interface UpdateProfileInput {
+  name?: string;
+  phone?: string;
+}
+
+export interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export async function register(input: RegisterInput): Promise<AuthResponse> {
   const res = await apiRequest<AuthResponse>('/auth/register', { method: 'POST', body: input });
   setAuthCookie(res.token);
@@ -47,4 +58,12 @@ export function logout() {
 
 export async function getCurrentUser(): Promise<AuthUser> {
   return apiRequest<AuthUser>('/auth/me');
+}
+
+export async function updateProfile(input: UpdateProfileInput): Promise<AuthUser> {
+  return apiRequest<AuthUser>('/auth/me', { method: 'PATCH', body: input });
+}
+
+export async function changePassword(input: ChangePasswordInput): Promise<void> {
+  return apiRequest<void>('/auth/change-password', { method: 'POST', body: input });
 }

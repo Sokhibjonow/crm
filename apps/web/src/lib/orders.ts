@@ -80,6 +80,8 @@ export interface ListOrdersParams {
   paymentStatus?: PaymentStatus;
   customerId?: string;
   q?: string;
+  dateFrom?: string; // YYYY-MM-DD
+  dateTo?: string;
   page?: number;
   take?: number;
 }
@@ -109,16 +111,49 @@ export interface AddPaymentInput {
   reference?: string;
 }
 
-export function listOrders(params: ListOrdersParams = {}): Promise<OrderListResult> {
+function ordersQuery(params: ListOrdersParams): string {
   const search = new URLSearchParams();
   if (params.status) search.set('status', params.status);
   if (params.paymentStatus) search.set('paymentStatus', params.paymentStatus);
   if (params.customerId) search.set('customerId', params.customerId);
   if (params.q) search.set('q', params.q);
+  if (params.dateFrom) search.set('dateFrom', params.dateFrom);
+  if (params.dateTo) search.set('dateTo', params.dateTo);
   if (params.page) search.set('page', String(params.page));
   if (params.take) search.set('take', String(params.take));
-  const qs = search.toString();
+  return search.toString();
+}
+
+export function listOrders(params: ListOrdersParams = {}): Promise<OrderListResult> {
+  const qs = ordersQuery(params);
   return apiRequest<OrderListResult>(`/orders${qs ? `?${qs}` : ''}`);
+}
+
+export async function downloadOrdersExport(
+  params: ListOrdersParams,
+  format: 'csv' | 'xlsx',
+): Promise<void> {
+  const { getAuthCookie } = await import('./cookies');
+  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+  const qs = ordersQuery(params);
+  const url = `${base}/api/orders/export?format=${format}${qs ? `&${qs}` : ''}`;
+  const token = getAuthCookie();
+  const res = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error(`Export failed: ${res.status}`);
+  const blob = await res.blob();
+  const cd = res.headers.get('Content-Disposition') ?? '';
+  const match = cd.match(/filename="?([^";]+)"?/);
+  const filename = match?.[1] ?? `orders.${format}`;
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = objectUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(objectUrl);
 }
 
 export function getOrder(id: string): Promise<Order> {

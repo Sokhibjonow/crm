@@ -1,5 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsISO8601,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { OrderStatus, PaymentStatus } from '@savdo/db';
 
 export class ListOrdersDto {
@@ -19,6 +28,15 @@ export class ListOrdersDto {
   @IsString()
   @MaxLength(120)
   q?: string;
+
+  // YYYY-MM-DD (inclusive on both ends, interpreted in UTC).
+  @IsOptional()
+  @IsISO8601({ strict: false })
+  dateFrom?: string;
+
+  @IsOptional()
+  @IsISO8601({ strict: false })
+  dateTo?: string;
 
   @IsOptional()
   @Type(() => Number)

@@ -235,5 +235,39 @@
     "errorInvalidCredentials": "Email yoki parol noto'g'ri",
     "errorEmailTaken": "Bu email allaqachon ishlatilgan",
     "errorGeneric": "Xatolik. Qaytadan urinib ko'ring."
+  },
+  "settings": {
+    "title": "Sozlamalar",
+    "store": "Do'kon",
+    "storeDesc": "Nomi, til, tarif",
+    "profile": "Profil",
+    "profileDesc": "Shaxsiy ma'lumotlar va parol",
+    "ownerOnly": "Faqat egasiga mavjud",
+    "storeNameLabel": "Do'kon nomi",
+    "localeLabel": "Standart interfeys tili",
+    "localeRu": "Ruscha",
+    "localeUz": "O'zbek",
+    "subscriptionPlan": "Tarif",
+    "currency": "Valyuta",
+    "saved": "Saqlandi ✓",
+    "yourProfile": "Profil",
+    "name": "Ism",
+    "email": "Email",
+    "phone": "Telefon",
+    "role": "Rol",
+    "changePasswordTitle": "Parolni o'zgartirish",
+    "currentPassword": "Joriy parol",
+    "newPassword": "Yangi parol",
+    "passwordChanged": "Parol o'zgartirildi ✓",
+    "errorWrongPassword": "Joriy parol noto'g'ri"
+  },
+  "ordersExtra": {
+    "dateFrom": "Sanadan",
+    "dateTo": "Sanagacha",
+    "clearDates": "Sanalarni tozalash",
+    "exportCsv": "CSV",
+    "exportXlsx": "Excel",
+    "export": "Eksport",
+    "exportFailed": "Yuklab bo'lmadi"
   }
 }

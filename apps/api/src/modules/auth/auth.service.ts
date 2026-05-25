@@ -4,8 +4,10 @@ import { Role } from '@savdo/db';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { JwtPayload } from '../../common/auth/jwt-payload.type';
+import type { ChangePasswordDto } from './dto/change-password.dto';
 import type { LoginDto } from './dto/login.dto';
 import type { RegisterDto } from './dto/register.dto';
+import type { UpdateProfileDto } from './dto/update-profile.dto';
 
 const BCRYPT_ROUNDS = 10;
 
@@ -72,7 +74,7 @@ export class AuthService {
     return this.buildAuthResult(user, user.store.name);
   }
 
-  async me(payload: JwtPayload): Promise<AuthResult['user']> {
+  async me(payload: JwtPayload): Promise<AuthResult['user'] & { phone: string | null }> {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.userId },
       include: { store: true },
@@ -82,10 +84,37 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
       role: user.role,
       storeId: user.storeId,
       storeName: user.store.name,
     };
+  }
+
+  async updateProfile(payload: JwtPayload, dto: UpdateProfileDto) {
+    await this.prisma.user.update({
+      where: { id: payload.userId },
+      data: {
+        ...(dto.name !== undefined && { name: dto.name }),
+        ...(dto.phone !== undefined && { phone: dto.phone || null }),
+      },
+    });
+    return this.me(payload);
+  }
+
+  async changePassword(payload: JwtPayload, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { passwordHash: true, isActive: true },
+    });
+    if (!user || !user.isActive) throw new UnauthorizedException();
+    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!ok) throw new UnauthorizedException('Current password is incorrect');
+    const passwordHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
+    await this.prisma.user.update({
+      where: { id: payload.userId },
+      data: { passwordHash },
+    });
   }
 
   private buildAuthResult(

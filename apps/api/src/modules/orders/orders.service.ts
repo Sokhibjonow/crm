@@ -17,6 +17,10 @@ type Tx = Prisma.TransactionClient;
 
 const DEFAULT_TAKE = 25;
 
+function startOfUtcDay(d: Date): Date {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
 const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.NEW]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
   [OrderStatus.CONFIRMED]: [OrderStatus.PACKING, OrderStatus.CANCELLED],
@@ -49,20 +53,7 @@ export class OrdersService {
     const page = query.page ?? 1;
     const skip = (page - 1) * take;
 
-    const where: Prisma.OrderWhereInput = { storeId };
-    if (query.status) where.status = query.status;
-    if (query.paymentStatus) where.paymentStatus = query.paymentStatus;
-    if (query.customerId) where.customerId = query.customerId;
-    if (query.q) {
-      where.customer = {
-        is: {
-          OR: [
-            { name: { contains: query.q, mode: 'insensitive' } },
-            { phone: { contains: query.q, mode: 'insensitive' } },
-          ],
-        },
-      };
-    }
+    const where = this.buildWhere(storeId, query);
 
     const [items, total] = await this.prisma.$transaction([
       this.prisma.order.findMany({
@@ -79,6 +70,48 @@ export class OrdersService {
     ]);
 
     return { items, total, page, take };
+  }
+
+  /** Same filters as list, but returns all rows (no pagination) for export. */
+  async listForExport(storeId: string, query: ListOrdersDto) {
+    const where = this.buildWhere(storeId, query);
+    return this.prisma.order.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        customer: { select: { id: true, name: true, phone: true } },
+        items: { include: { product: { select: { name: true, sku: true } } } },
+      },
+    });
+  }
+
+  private buildWhere(storeId: string, query: ListOrdersDto): Prisma.OrderWhereInput {
+    const where: Prisma.OrderWhereInput = { storeId };
+    if (query.status) where.status = query.status;
+    if (query.paymentStatus) where.paymentStatus = query.paymentStatus;
+    if (query.customerId) where.customerId = query.customerId;
+    if (query.q) {
+      where.customer = {
+        is: {
+          OR: [
+            { name: { contains: query.q, mode: 'insensitive' } },
+            { phone: { contains: query.q, mode: 'insensitive' } },
+          ],
+        },
+      };
+    }
+    if (query.dateFrom || query.dateTo) {
+      const createdAt: Prisma.DateTimeFilter = {};
+      if (query.dateFrom) createdAt.gte = startOfUtcDay(new Date(query.dateFrom));
+      if (query.dateTo) {
+        // inclusive end-of-day
+        const d = startOfUtcDay(new Date(query.dateTo));
+        d.setUTCDate(d.getUTCDate() + 1);
+        createdAt.lt = d;
+      }
+      where.createdAt = createdAt;
+    }
+    return where;
   }
 
   async get(storeId: string, id: string) {
