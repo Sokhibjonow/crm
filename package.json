@@ -14,7 +14,9 @@
     "api:dev": "npm -w @savdo/api run start:dev",
     "web:dev": "npm -w @savdo/web run dev",
     "build": "npm -w @savdo/db run generate && npm -w @savdo/api run build && npm -w @savdo/web run build",
-    "typecheck": "npm -w @savdo/api run typecheck && npm -w @savdo/web run typecheck"
+    "typecheck": "npm -w @savdo/api run typecheck && npm -w @savdo/web run typecheck",
+    "build:railway": "npm -w @savdo/db run generate && npm -w @savdo/api run build",
+    "start:railway": "npm -w @savdo/db run migrate:deploy && npm -w @savdo/api run start"
   },
   "engines": {
     "node": ">=20.11"

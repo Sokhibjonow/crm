@@ -65,6 +65,10 @@ Auth · Dashboard · Customers · Orders · Products · Inventory · Basic repor
 
 Phase 2+ (not in MVP): Telegram bot, courier integrations, POS, full ERP, advanced analytics.
 
+## Deploy
+
+See [DEPLOY.md](./DEPLOY.md) for the full walkthrough (GitHub → Railway for API + Postgres → Vercel for web).
+
 ## Roadmap
 
 1. Shops (current)

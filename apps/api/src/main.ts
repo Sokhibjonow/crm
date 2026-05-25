@@ -4,15 +4,27 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: true, credentials: true });
+
+  // CORS: in production set WEB_ORIGIN to the Vercel URL (or comma-separated list).
+  // Empty/unset = reflect any origin (fine for local dev).
+  const origins = (process.env.WEB_ORIGIN ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  app.enableCors({
+    origin: origins.length > 0 ? origins : true,
+    credentials: true,
+  });
+
   app.setGlobalPrefix('api', { exclude: ['health'] });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  const port = Number(process.env.API_PORT ?? 4000);
-  await app.listen(port);
+  // Railway / most PaaS providers inject PORT. Fall back to API_PORT for local dev.
+  const port = Number(process.env.PORT ?? process.env.API_PORT ?? 4000);
+  await app.listen(port, '0.0.0.0');
 
   // eslint-disable-next-line no-console
-  console.log(`API listening on http://localhost:${port}`);
+  console.log(`API listening on :${port}`);
 }
 
 bootstrap();
