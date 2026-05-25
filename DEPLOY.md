@@ -67,13 +67,16 @@ paste into):
 
 ```env
 DATABASE_URL=<paste the value from step 2.2>
-JWT_SECRET=<paste the JM7Jm... from your local .env, or generate a new one>
+JWT_SECRET=<paste from your local .env, or generate a new strong one>
 JWT_EXPIRES_IN=7d
-TELEGRAM_BOT_TOKEN=8843764401:AAEjMmUkPIpiKfcKdgKSUrx6cJRv9xHHQTM
-TELEGRAM_BOT_USERNAME=SavdoCRMbot
+TELEGRAM_BOT_TOKEN=<your bot token from @BotFather>
+TELEGRAM_BOT_USERNAME=<your bot username, no @>
 WEB_ORIGIN=https://<your-vercel-domain>.vercel.app
 NODE_ENV=production
 ```
+
+> Never commit real secrets to a public repo. Keep the actual values
+> only in `.env` (gitignored) and in the Railway/Vercel dashboards.
 
 (`WEB_ORIGIN` you'll come back and fill in after step 3 — Vercel gives
 you the URL.)
@@ -184,10 +187,10 @@ comma-separated, e.g.
   what's already committed. New schema change → run `migrate:dev
   --name <whatever>` locally → commit → push → Railway applies it on
   next deploy.
-- **Token in chat.** The Telegram token in your `.env` was pasted in
-  chat once. If you care about that exposure, revoke and re-issue via
-  @BotFather, then update both your local `.env` and the Railway
-  variable.
+- **Secrets hygiene.** Never put real tokens or `JWT_SECRET` values
+  into committed files. They live in `.env` (gitignored) and in the
+  Railway/Vercel dashboards only. If a token ever leaks, revoke it
+  via @BotFather and update `.env` + Railway.
 
 ---
 
