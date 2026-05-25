@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@savdo/db';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TelegramNotificationsService } from '../telegram/telegram.notifications';
 import type { AddItemDto } from './dto/add-item.dto';
 import type { AddPaymentDto } from './dto/add-payment.dto';
 import type { CreateOrderDto } from './dto/create-order.dto';
@@ -38,7 +39,10 @@ const ORDER_INCLUDE = {
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly telegram: TelegramNotificationsService,
+  ) {}
 
   async list(storeId: string, query: ListOrdersDto) {
     const take = query.take ?? DEFAULT_TAKE;
@@ -87,7 +91,7 @@ export class OrdersService {
   }
 
   async create(storeId: string, userId: string | undefined, dto: CreateOrderDto) {
-    return this.prisma.$transaction(async (tx) => {
+    const created = await this.prisma.$transaction(async (tx) => {
       // Resolve and validate products (same store, in stock, get default prices).
       const productIds = Array.from(new Set(dto.items.map((i) => i.productId)));
       const products = await tx.product.findMany({
@@ -181,6 +185,8 @@ export class OrdersService {
 
       return created;
     });
+    this.telegram.notifyOrderStatus(created.id, 'CREATED');
+    return created;
   }
 
   async update(storeId: string, id: string, dto: UpdateOrderDto) {
@@ -280,7 +286,7 @@ export class OrdersService {
     userId: string | undefined,
     next: OrderStatus,
   ) {
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       const order = await tx.order.findFirst({
         where: { id, storeId },
         include: { items: true },
@@ -317,6 +323,8 @@ export class OrdersService {
 
       return tx.order.findUniqueOrThrow({ where: { id }, include: ORDER_INCLUDE });
     });
+    this.telegram.notifyOrderStatus(updated.id, next);
+    return updated;
   }
 
   async addPayment(

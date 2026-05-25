@@ -39,6 +39,19 @@ npm run api:dev    # http://localhost:4000  (health: GET /health)
 npm run web:dev    # http://localhost:3000
 ```
 
+### Telegram bot (optional)
+
+Create a bot via [@BotFather](https://t.me/BotFather), put the token in
+`TELEGRAM_BOT_TOKEN` and the bot's username in `TELEGRAM_BOT_USERNAME`
+(without `@`). The API will start the bot in long-polling mode on boot.
+
+When the bot is configured, every customer card gains a Telegram section
+that generates a deep link `https://t.me/<bot>?start=c_<code>`. When the
+customer follows it, the bot captures their chat ID and the link code is
+consumed. After that, the customer receives DMs when the order is
+created and on every status change (CONFIRMED / PACKING / SHIPPED /
+DELIVERED / CANCELLED). Messages render in the store's locale.
+
 ### Try the auth flow
 
 1. Open `http://localhost:3000` — you'll be redirected to `/ru`.

@@ -213,7 +213,16 @@
     "deleteConfirm": "Удалить клиента?",
     "createdAt": "Создан",
     "page": "Страница",
-    "errorPhoneTaken": "Клиент с этим телефоном уже существует"
+    "errorPhoneTaken": "Клиент с этим телефоном уже существует",
+    "telegramTitle": "Telegram",
+    "telegramConnected": "✓ Клиент подключён к Telegram-боту",
+    "telegramNotConfigured": "Telegram-бот не настроен на сервере (переменная TELEGRAM_BOT_USERNAME)",
+    "telegramGenerateLink": "Создать ссылку для подключения",
+    "telegramRegenerateLink": "Сгенерировать новую ссылку",
+    "telegramDisconnect": "Отключить Telegram",
+    "telegramLinkHint": "Отправьте эту ссылку клиенту. Когда он её откроет, бот привяжет его чат для уведомлений о заказах.",
+    "telegramCopy": "Копировать",
+    "telegramCopied": "Скопировано ✓"
   },
   "auth": {
     "loginTitle": "Вход в SavdoCRM",

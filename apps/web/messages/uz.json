@@ -213,7 +213,16 @@
     "deleteConfirm": "Mijozni o'chirilsinmi?",
     "createdAt": "Yaratilgan",
     "page": "Sahifa",
-    "errorPhoneTaken": "Bu telefonli mijoz allaqachon mavjud"
+    "errorPhoneTaken": "Bu telefonli mijoz allaqachon mavjud",
+    "telegramTitle": "Telegram",
+    "telegramConnected": "✓ Mijoz Telegram-botga ulangan",
+    "telegramNotConfigured": "Telegram-bot serverda sozlanmagan (TELEGRAM_BOT_USERNAME)",
+    "telegramGenerateLink": "Ulanish havolasini yaratish",
+    "telegramRegenerateLink": "Yangi havola yaratish",
+    "telegramDisconnect": "Telegramni uzish",
+    "telegramLinkHint": "Bu havolani mijozga yuboring. U ochganda bot uning chatini buyurtma xabarnomalari uchun bog'laydi.",
+    "telegramCopy": "Nusxalash",
+    "telegramCopied": "Nusxa olindi ✓"
   },
   "auth": {
     "loginTitle": "SavdoCRM ga kirish",

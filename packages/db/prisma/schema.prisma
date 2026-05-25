@@ -112,16 +112,18 @@ model User {
 // =========================================================================
 
 model Customer {
-  id         String   @id @default(cuid())
-  storeId    String
-  name       String
-  phone      String?
-  telegram   String?
-  notes      String?
-  tags       String[] @default([])
-  totalSpent Decimal  @default(0) @db.Decimal(14, 2)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id               String   @id @default(cuid())
+  storeId          String
+  name             String
+  phone            String?
+  telegram         String?
+  telegramChatId   String?  // populated when the customer DMs the bot via the link
+  telegramLinkCode String?  @unique
+  notes            String?
+  tags             String[] @default([])
+  totalSpent       Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   store  Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
   orders Order[]

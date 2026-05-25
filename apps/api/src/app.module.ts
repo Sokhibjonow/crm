@@ -11,6 +11,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { StoresModule } from './modules/stores/stores.module';
 import { TeamModule } from './modules/team/team.module';
+import { TelegramModule } from './modules/telegram/telegram.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ReportsModule,
     TeamModule,
     DashboardModule,
+    TelegramModule,
   ],
 })
 export class AppModule {}

@@ -11,6 +11,7 @@ import {
   updateCustomer,
 } from '@/lib/customers';
 import { CustomerForm } from '../_components/customer-form';
+import { TelegramSection } from './_components/telegram-section';
 
 interface Props {
   params: { locale: string; id: string };
@@ -98,6 +99,7 @@ export default function EditCustomerPage({ params: { locale, id } }: Props) {
           }}
         />
       </div>
+      <TelegramSection customerId={customer.id} />
     </main>
   );
 }

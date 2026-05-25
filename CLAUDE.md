@@ -16,7 +16,9 @@ packages/
 
 Auth · Dashboard · Customers · Orders · Products · Inventory · Basic reports · Roles.
 
-**Not in MVP:** Telegram bot, courier integrations, POS, full ERP, advanced analytics. If a feature request lands outside MVP, surface that explicitly before building it.
+**Not in MVP:** courier integrations, POS, full ERP, advanced analytics. If a feature request lands outside MVP, surface that explicitly before building it.
+
+**Phase 2 in progress:** Telegram customer notifications. Single platform-wide bot via `grammy` (long polling), token in `TELEGRAM_BOT_TOKEN`. Customers link by clicking a per-customer deep link on their card.
 
 ## Non-negotiable rules
 
