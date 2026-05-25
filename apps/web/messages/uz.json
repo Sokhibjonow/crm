@@ -32,6 +32,23 @@
     "topProductsRevenue": "Tushum",
     "viewAll": "Hammasi"
   },
+  "reports": {
+    "title": "Hisobotlar",
+    "range": "Davr",
+    "last7": "7 kun",
+    "last30": "30 kun",
+    "last90": "90 kun",
+    "totalRevenue": "Umumiy tushum",
+    "dailyRevenue": "Kunlik tushum",
+    "statusBreakdown": "Statuslar bo'yicha buyurtmalar",
+    "staff": "Xodimlar",
+    "topCustomers": "Top mijozlar",
+    "orders": "Buyurtmalar",
+    "revenue": "Tushum",
+    "count": "Soni",
+    "user": "Xodim",
+    "unknown": "—"
+  },
   "orders": {
     "title": "Buyurtmalar",
     "addNew": "Yangi buyurtma",

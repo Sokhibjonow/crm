@@ -32,6 +32,23 @@
     "topProductsRevenue": "Выручка",
     "viewAll": "Все"
   },
+  "reports": {
+    "title": "Отчёты",
+    "range": "Период",
+    "last7": "7 дней",
+    "last30": "30 дней",
+    "last90": "90 дней",
+    "totalRevenue": "Общая выручка",
+    "dailyRevenue": "Выручка по дням",
+    "statusBreakdown": "Заказы по статусу",
+    "staff": "Сотрудники",
+    "topCustomers": "Топ клиентов",
+    "orders": "Заказов",
+    "revenue": "Выручка",
+    "count": "Кол-во",
+    "user": "Сотрудник",
+    "unknown": "—"
+  },
   "orders": {
     "title": "Заказы",
     "addNew": "Новый заказ",
