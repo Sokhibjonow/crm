@@ -25,7 +25,12 @@
     "ordersToday": "Заказов сегодня",
     "revenueToday": "Выручка сегодня",
     "pendingOrders": "Ожидающие заказы",
-    "lowStock": "Низкий остаток"
+    "lowStock": "Низкий остаток",
+    "recentOrders": "Последние заказы",
+    "topProducts": "Топ товаров (7 дней)",
+    "topProductsQty": "Продано",
+    "topProductsRevenue": "Выручка",
+    "viewAll": "Все"
   },
   "orders": {
     "title": "Заказы",

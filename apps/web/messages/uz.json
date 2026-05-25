@@ -25,7 +25,12 @@
     "ordersToday": "Bugungi buyurtmalar",
     "revenueToday": "Bugungi tushum",
     "pendingOrders": "Kutilayotgan buyurtmalar",
-    "lowStock": "Kam qoldiq"
+    "lowStock": "Kam qoldiq",
+    "recentOrders": "Oxirgi buyurtmalar",
+    "topProducts": "Top mahsulotlar (7 kun)",
+    "topProductsQty": "Sotilgan",
+    "topProductsRevenue": "Tushum",
+    "viewAll": "Hammasi"
   },
   "orders": {
     "title": "Buyurtmalar",
