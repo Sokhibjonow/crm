@@ -26,20 +26,25 @@ packages/
 # 1. Install
 npm install
 
-# 2. Provision a Postgres (use Railway free tier and copy DATABASE_URL into .env)
+# 2. Provision a Postgres (Railway free tier works) and put DATABASE_URL
+#    into .env. Set JWT_SECRET to a long random string.
 Copy-Item .env.example .env
 
-# 3. Generate Prisma client and run migrations
+# 3. Generate Prisma client and create the initial migration
 npm run db:generate
-npm run db:migrate
+npm -w @savdo/db run migrate:dev -- --name init
 
 # 4. Run dev servers (two terminals)
-npm run api:dev
-npm run web:dev
+npm run api:dev    # http://localhost:4000  (health: GET /health)
+npm run web:dev    # http://localhost:3000
 ```
 
-API: http://localhost:4000 — health: `GET /health`
-Web: http://localhost:3000
+### Try the auth flow
+
+1. Open `http://localhost:3000` — you'll be redirected to `/ru`.
+2. Click **Регистрация**, fill in store name + your name + email + password (≥8 chars).
+3. On success you land on `/ru/dashboard`. The cookie `savdo_auth` holds your JWT (7-day expiry).
+4. Logout via the button in the header. The middleware redirects authenticated users away from `/login` and `/register`, and unauthenticated users away from `/dashboard`.
 
 ## MVP scope (v1)
 

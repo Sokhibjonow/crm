@@ -31,6 +31,12 @@
     "loginTitle": "Вход в SavdoCRM",
     "registerTitle": "Регистрация магазина",
     "haveAccount": "Уже есть аккаунт?",
-    "noAccount": "Нет аккаунта?"
+    "noAccount": "Нет аккаунта?",
+    "storeName": "Название магазина",
+    "yourName": "Ваше имя",
+    "submitting": "Подождите...",
+    "errorInvalidCredentials": "Неверный email или пароль",
+    "errorEmailTaken": "Этот email уже используется",
+    "errorGeneric": "Ошибка. Попробуйте ещё раз."
   }
 }

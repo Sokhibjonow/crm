@@ -31,6 +31,12 @@
     "loginTitle": "SavdoCRM ga kirish",
     "registerTitle": "Do'konni ro'yxatga olish",
     "haveAccount": "Akkauntingiz bormi?",
-    "noAccount": "Akkauntingiz yo'qmi?"
+    "noAccount": "Akkauntingiz yo'qmi?",
+    "storeName": "Do'kon nomi",
+    "yourName": "Ismingiz",
+    "submitting": "Kuting...",
+    "errorInvalidCredentials": "Email yoki parol noto'g'ri",
+    "errorEmailTaken": "Bu email allaqachon ishlatilgan",
+    "errorGeneric": "Xatolik. Qaytadan urinib ko'ring."
   }
 }
