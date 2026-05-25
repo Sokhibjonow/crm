@@ -1,0 +1,36 @@
+{
+  "common": {
+    "appName": "SavdoCRM",
+    "tagline": "O'zbekiston chakana do'konlari uchun CRM",
+    "signIn": "Kirish",
+    "signUp": "Ro'yxatdan o'tish",
+    "signOut": "Chiqish",
+    "email": "Email",
+    "password": "Parol",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish"
+  },
+  "nav": {
+    "dashboard": "Bosh sahifa",
+    "customers": "Mijozlar",
+    "orders": "Buyurtmalar",
+    "products": "Mahsulotlar",
+    "inventory": "Ombor",
+    "reports": "Hisobotlar",
+    "team": "Xodimlar",
+    "settings": "Sozlamalar"
+  },
+  "dashboard": {
+    "title": "Bosh sahifa",
+    "ordersToday": "Bugungi buyurtmalar",
+    "revenueToday": "Bugungi tushum",
+    "pendingOrders": "Kutilayotgan buyurtmalar",
+    "lowStock": "Kam qoldiq"
+  },
+  "auth": {
+    "loginTitle": "SavdoCRM ga kirish",
+    "registerTitle": "Do'konni ro'yxatga olish",
+    "haveAccount": "Akkauntingiz bormi?",
+    "noAccount": "Akkauntingiz yo'qmi?"
+  }
+}

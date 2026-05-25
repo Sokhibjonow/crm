@@ -1,0 +1,266 @@
+// SavdoCRM — Prisma schema.
+// Multi-tenant: every tenant-scoped model carries storeId and must be filtered by it in queries.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =========================================================================
+// Enums
+// =========================================================================
+
+enum Role {
+  OWNER
+  MANAGER
+  CASHIER
+  WAREHOUSE
+  COURIER
+}
+
+enum SubscriptionPlan {
+  STARTER
+  PRO
+  BUSINESS
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PACKING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  CLICK
+  PAYME
+  DEBT
+  OTHER
+}
+
+enum DeliveryStatus {
+  PENDING
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+  RETURNED
+}
+
+// =========================================================================
+// Tenant root
+// =========================================================================
+
+model Store {
+  id               String           @id @default(cuid())
+  name             String
+  subscriptionPlan SubscriptionPlan @default(STARTER)
+  currency         String           @default("UZS")
+  locale           String           @default("ru")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  users        User[]
+  customers    Customer[]
+  products     Product[]
+  orders       Order[]
+  activityLogs ActivityLog[]
+}
+
+// =========================================================================
+// Auth / team
+// =========================================================================
+
+model User {
+  id           String   @id @default(cuid())
+  storeId      String
+  name         String
+  email        String
+  phone        String?
+  passwordHash String
+  role         Role     @default(OWNER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  store        Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  activityLogs ActivityLog[]
+  ordersCreated Order[]      @relation("OrderCreatedBy")
+
+  @@unique([storeId, email])
+  @@index([storeId])
+}
+
+// =========================================================================
+// Customers CRM
+// =========================================================================
+
+model Customer {
+  id         String   @id @default(cuid())
+  storeId    String
+  name       String
+  phone      String?
+  telegram   String?
+  notes      String?
+  tags       String[] @default([])
+  totalSpent Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  store  Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@unique([storeId, phone])
+  @@index([storeId])
+  @@index([storeId, name])
+}
+
+// =========================================================================
+// Inventory
+// =========================================================================
+
+model Product {
+  id        String   @id @default(cuid())
+  storeId   String
+  name      String
+  sku       String?
+  category  String?
+  size      String?
+  color     String?
+  stock     Int      @default(0)
+  lowStockThreshold Int @default(0)
+  costPrice Decimal  @default(0) @db.Decimal(14, 2)
+  salePrice Decimal  @default(0) @db.Decimal(14, 2)
+  supplier  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@unique([storeId, sku])
+  @@index([storeId])
+  @@index([storeId, category])
+}
+
+// =========================================================================
+// Orders
+// =========================================================================
+
+model Order {
+  id            String        @id @default(cuid())
+  storeId       String
+  customerId    String?
+  number        Int           // store-local sequence for human-readable order number
+  status        OrderStatus   @default(NEW)
+  paymentStatus PaymentStatus @default(UNPAID)
+  subtotal      Decimal       @default(0) @db.Decimal(14, 2)
+  discount      Decimal       @default(0) @db.Decimal(14, 2)
+  total         Decimal       @default(0) @db.Decimal(14, 2)
+  paidAmount    Decimal       @default(0) @db.Decimal(14, 2)
+  notes         String?
+  createdById   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  store     Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer  Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  createdBy User?       @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  items     OrderItem[]
+  payments  Payment[]
+  delivery  Delivery?
+
+  @@unique([storeId, number])
+  @@index([storeId, status])
+  @@index([storeId, createdAt])
+  @@index([storeId, customerId])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  qty       Int
+  unitPrice Decimal @db.Decimal(14, 2)
+  lineTotal Decimal @db.Decimal(14, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// =========================================================================
+// Payments
+// =========================================================================
+
+model Payment {
+  id        String        @id @default(cuid())
+  orderId   String
+  amount    Decimal       @db.Decimal(14, 2)
+  method    PaymentMethod
+  reference String?
+  createdAt DateTime      @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+// =========================================================================
+// Delivery
+// =========================================================================
+
+model Delivery {
+  id           String         @id @default(cuid())
+  orderId      String         @unique
+  status       DeliveryStatus @default(PENDING)
+  courierName  String?
+  courierPhone String?
+  address      String?
+  scheduledAt  DateTime?
+  deliveredAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// =========================================================================
+// Audit
+// =========================================================================
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  storeId    String
+  userId     String?
+  entityType String   // e.g. "order", "customer", "product"
+  entityId   String?
+  action     String   // e.g. "created", "updated", "status_changed"
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user  User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, createdAt])
+  @@index([storeId, entityType, entityId])
+}

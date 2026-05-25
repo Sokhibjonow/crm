@@ -1,0 +1,36 @@
+{
+  "common": {
+    "appName": "SavdoCRM",
+    "tagline": "CRM для розничных магазинов Узбекистана",
+    "signIn": "Войти",
+    "signUp": "Регистрация",
+    "signOut": "Выйти",
+    "email": "Email",
+    "password": "Пароль",
+    "save": "Сохранить",
+    "cancel": "Отмена"
+  },
+  "nav": {
+    "dashboard": "Главная",
+    "customers": "Клиенты",
+    "orders": "Заказы",
+    "products": "Товары",
+    "inventory": "Склад",
+    "reports": "Отчёты",
+    "team": "Сотрудники",
+    "settings": "Настройки"
+  },
+  "dashboard": {
+    "title": "Главная",
+    "ordersToday": "Заказов сегодня",
+    "revenueToday": "Выручка сегодня",
+    "pendingOrders": "Ожидающие заказы",
+    "lowStock": "Низкий остаток"
+  },
+  "auth": {
+    "loginTitle": "Вход в SavdoCRM",
+    "registerTitle": "Регистрация магазина",
+    "haveAccount": "Уже есть аккаунт?",
+    "noAccount": "Нет аккаунта?"
+  }
+}

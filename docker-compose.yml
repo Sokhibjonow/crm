@@ -1,0 +1,30 @@
+version: "3.9"
+
+# Optional local stack — Docker is not required to develop.
+# For dev without Docker, use a hosted Postgres (Railway free tier) and Upstash Redis.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: savdocrm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: savdocrm
+    ports:
+      - "5432:5432"
+    volumes:
+      - savdocrm-pg:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: savdocrm-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - savdocrm-redis:/data
+
+volumes:
+  savdocrm-pg:
+  savdocrm-redis:

@@ -1,0 +1,22 @@
+{
+  "name": "savdocrm",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Retail CRM SaaS for Uzbekistan SMB (Instagram/Telegram shops).",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "db:generate": "npm -w @savdo/db run generate",
+    "db:migrate": "npm -w @savdo/db run migrate:dev",
+    "db:studio": "npm -w @savdo/db run studio",
+    "api:dev": "npm -w @savdo/api run start:dev",
+    "web:dev": "npm -w @savdo/web run dev",
+    "build": "npm -w @savdo/db run generate && npm -w @savdo/api run build && npm -w @savdo/web run build",
+    "typecheck": "npm -w @savdo/api run typecheck && npm -w @savdo/web run typecheck"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}
