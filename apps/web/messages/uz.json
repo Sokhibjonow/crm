@@ -27,6 +27,28 @@
     "pendingOrders": "Kutilayotgan buyurtmalar",
     "lowStock": "Kam qoldiq"
   },
+  "customers": {
+    "title": "Mijozlar",
+    "addNew": "Mijoz qo'shish",
+    "newTitle": "Yangi mijoz",
+    "editTitle": "Mijozni tahrirlash",
+    "search": "Ism, telefon yoki Telegram bo'yicha qidiruv",
+    "noResults": "Mijozlar topilmadi",
+    "name": "Ism",
+    "phone": "Telefon",
+    "telegram": "Telegram",
+    "notes": "Izohlar",
+    "tags": "Teglar",
+    "tagsHint": "Vergul bilan ajrating",
+    "totalSpent": "Xaridlar summasi",
+    "actions": "Amallar",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "deleteConfirm": "Mijozni o'chirilsinmi?",
+    "createdAt": "Yaratilgan",
+    "page": "Sahifa",
+    "errorPhoneTaken": "Bu telefonli mijoz allaqachon mavjud"
+  },
   "auth": {
     "loginTitle": "SavdoCRM ga kirish",
     "registerTitle": "Do'konni ro'yxatga olish",

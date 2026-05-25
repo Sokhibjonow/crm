@@ -27,6 +27,28 @@
     "pendingOrders": "Ожидающие заказы",
     "lowStock": "Низкий остаток"
   },
+  "customers": {
+    "title": "Клиенты",
+    "addNew": "Добавить клиента",
+    "newTitle": "Новый клиент",
+    "editTitle": "Редактировать клиента",
+    "search": "Поиск по имени, телефону или Telegram",
+    "noResults": "Клиенты не найдены",
+    "name": "Имя",
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "notes": "Заметки",
+    "tags": "Теги",
+    "tagsHint": "Через запятую",
+    "totalSpent": "Сумма покупок",
+    "actions": "Действия",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "deleteConfirm": "Удалить клиента?",
+    "createdAt": "Создан",
+    "page": "Страница",
+    "errorPhoneTaken": "Клиент с этим телефоном уже существует"
+  },
   "auth": {
     "loginTitle": "Вход в SavdoCRM",
     "registerTitle": "Регистрация магазина",

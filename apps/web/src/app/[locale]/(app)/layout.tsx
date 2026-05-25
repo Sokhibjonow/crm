@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { LogoutButton } from './_components/logout-button';
 import { UserBadge } from './_components/user-badge';
 
-export default function DashboardLayout({
+export default function AppLayout({
   children,
   params: { locale },
 }: {

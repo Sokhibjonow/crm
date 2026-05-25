@@ -9,34 +9,37 @@ const intlMiddleware = createIntlMiddleware({
   localePrefix: 'always',
 });
 
-const PROTECTED_SEGMENTS = ['/dashboard'];
-const AUTH_PAGES = ['/login', '/register'];
+const PROTECTED_TOP_SEGMENTS = new Set([
+  'dashboard',
+  'customers',
+  'orders',
+  'products',
+  'inventory',
+  'reports',
+  'team',
+  'settings',
+]);
+const AUTH_PAGES = new Set(['login', 'register']);
 
-function isProtected(pathname: string): boolean {
-  return PROTECTED_SEGMENTS.some((seg) => pathname.includes(seg));
-}
-
-function isAuthPage(pathname: string): boolean {
-  return AUTH_PAGES.some((seg) => pathname.endsWith(seg));
-}
-
-function getLocaleFromPath(pathname: string): string {
-  const seg = pathname.split('/')[1];
-  return locales.includes(seg as (typeof locales)[number]) ? seg : defaultLocale;
+function parseSegments(pathname: string): { locale: string; top: string | undefined } {
+  const parts = pathname.split('/').filter(Boolean);
+  const locale = locales.includes(parts[0] as (typeof locales)[number]) ? parts[0]! : defaultLocale;
+  const top = locales.includes(parts[0] as (typeof locales)[number]) ? parts[1] : parts[0];
+  return { locale, top };
 }
 
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const locale = getLocaleFromPath(pathname);
+  const { locale, top } = parseSegments(pathname);
 
-  if (isProtected(pathname) && !token) {
+  if (top && PROTECTED_TOP_SEGMENTS.has(top) && !token) {
     const url = req.nextUrl.clone();
     url.pathname = `/${locale}/login`;
     return NextResponse.redirect(url);
   }
 
-  if (isAuthPage(pathname) && token) {
+  if (top && AUTH_PAGES.has(top) && token) {
     const url = req.nextUrl.clone();
     url.pathname = `/${locale}/dashboard`;
     return NextResponse.redirect(url);
