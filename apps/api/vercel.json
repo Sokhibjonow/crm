@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && npm -w @savdo/db run generate",
+  "framework": null,
+  "functions": {
+    "api/[[...path]].ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}

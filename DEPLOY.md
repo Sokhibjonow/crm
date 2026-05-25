@@ -1,101 +1,60 @@
-# Deploy SavdoCRM
+# Deploy SavdoCRM (Vercel-only)
 
-Production hosting target:
+Architecture:
 
-- **`apps/web`** (Next.js 14) → **Vercel**
-- **`apps/api`** (NestJS + Telegram long-polling bot) → **Railway**
-- **PostgreSQL** → Railway (provisioned as part of the API project)
+- **`apps/web`** (Next.js 14) → Vercel project `crm-web`
+- **`apps/api`** (NestJS) → Vercel project `crm-api` (serverless functions wrapping the Nest app)
+- **PostgreSQL** → **Neon** (serverless Postgres, free tier, no card)
+- **Telegram bot** → disabled on Vercel. Long-polling needs a continuously running process, which Vercel functions cannot provide. Re-enable in webhook mode later if needed.
 
-Vercel cannot host the API: the Telegram bot uses long-polling and the
-NestJS process is stateful, so it needs a long-running container — not
-serverless functions.
+Tradeoffs vs a long-running host (Railway/Fly):
+
+- **Cold starts:** the first request after idle takes 1–3 seconds while Nest + Prisma boot. Warm requests are normal.
+- **Bot is off:** order-status DMs to customers won't fire on Vercel. Everything else (auth, customers, orders, payments, reports, dashboard) works.
+- **Two Vercel projects.** One repo, two Vercel projects, both auto-deployed from `main` on every push.
 
 ---
 
 ## 0. Prerequisites
 
-- A GitHub account
-- A Vercel account (free) — sign in with GitHub
-- A Railway account (free trial) — sign in with GitHub
-- The Telegram bot token (already in your local `.env`)
+- GitHub account (the repo `Sokhibjonow/crm` already exists)
+- Vercel account (free) — sign in with GitHub
+- Neon account (free) — sign in with GitHub
 
 ---
 
-## 1. Create the GitHub repo and push
+## 1. Provision Postgres on Neon
 
-Go to <https://github.com/new>, create a repo (e.g. `savdocrm`),
-**leave it empty** (no README/license/.gitignore — the repo already
-has them).
+1. Go to <https://neon.tech> → sign in with GitHub → **Create a project**
+2. Project name: `savdocrm`. Region: pick the one closest to your users (e.g. **Frankfurt** for Uzbekistan / CIS).
+3. Once created, Neon shows you two connection strings under **Connection Details**:
+   - **Pooled connection** (usually labeled "Pooled" or includes `-pooler` in the host). Copy this — it goes into `DATABASE_URL`.
+   - **Direct connection** (no pooler). Copy this — it goes into `DIRECT_URL`.
+4. Keep both handy. You'll paste them into Vercel and into your local `.env`.
 
-Then in PowerShell from the project root:
+---
+
+## 2. Run the initial migration locally (against Neon)
+
+Vercel builds don't run `prisma migrate deploy` for you (and even if they did, it's fragile during cold starts). Generate the migration files locally, commit them, then every deploy just applies what's already in the repo.
+
+In your local `.env`, replace the `DATABASE_URL` placeholder with the **direct** (unpooled) Neon URL — `prisma migrate dev` needs a direct connection.
 
 ```powershell
-git remote add origin https://github.com/<your-user>/savdocrm.git
-git branch -M main
-git push -u origin main
+# .env (local)
+DATABASE_URL="postgresql://...neon.tech/.../neondb?sslmode=require"
+DIRECT_URL="postgresql://...neon.tech/.../neondb?sslmode=require"
 ```
 
-> If git asks for credentials, use a [Personal Access Token](https://github.com/settings/tokens) (classic, `repo` scope) as the password.
+(For local dev you can use the same direct URL for both. In Vercel you'll use pooled for `DATABASE_URL`.)
 
----
-
-## 2. Railway: API + Postgres
-
-### 2.1 Create the project
-
-1. Go to <https://railway.com/new> → **Deploy from GitHub repo** → pick `savdocrm`.
-2. Railway will start trying to build immediately. **Don't worry if the first build fails** — we need to add env vars + Postgres first.
-
-### 2.2 Add Postgres
-
-In the Railway project: **+ New** → **Database** → **PostgreSQL**.
-
-Open the new Postgres service → **Variables** tab → copy the value of
-`DATABASE_URL` (the public one that starts with `postgresql://`).
-
-### 2.3 Configure the API service
-
-Click the API service (the one that was deployed from your repo) →
-**Settings** tab:
-
-- **Build Command:** `npm run build:railway`
-- **Start Command:** `npm run start:railway`
-- **Root Directory:** leave empty (it's the repo root — the workspace install needs the root `package.json`)
-
-Then **Variables** tab — add these (Railway has a "Raw Editor" you can
-paste into):
-
-```env
-DATABASE_URL=<paste the value from step 2.2>
-JWT_SECRET=<paste from your local .env, or generate a new strong one>
-JWT_EXPIRES_IN=7d
-TELEGRAM_BOT_TOKEN=<your bot token from @BotFather>
-TELEGRAM_BOT_USERNAME=<your bot username, no @>
-WEB_ORIGIN=https://<your-vercel-domain>.vercel.app
-NODE_ENV=production
-```
-
-> Never commit real secrets to a public repo. Keep the actual values
-> only in `.env` (gitignored) and in the Railway/Vercel dashboards.
-
-(`WEB_ORIGIN` you'll come back and fill in after step 3 — Vercel gives
-you the URL.)
-
-### 2.4 Generate the initial migration locally, then deploy
-
-The Railway deploy will run `prisma migrate deploy`, which only applies
-migrations that already exist in the repo. You need to create the first
-migration locally against the Railway database.
-
-In your local `.env`, **replace the placeholder `DATABASE_URL` with the
-one from step 2.2**. Then:
+Then:
 
 ```powershell
 npm -w @savdo/db run migrate:dev -- --name init
 ```
 
-This creates `packages/db/prisma/migrations/<timestamp>_init/` and
-applies it to the Railway database. Commit and push:
+This creates `packages/db/prisma/migrations/<timestamp>_init/` and applies it to Neon. Commit and push:
 
 ```powershell
 git add packages/db/prisma/migrations
@@ -103,94 +62,90 @@ git commit -m "chore(db): initial migration"
 git push
 ```
 
-Railway will redeploy. Watch the **Deployments** tab — the start log
-should show `Telegram bot @SavdoCRMbot started` and `API listening on
-:<port>`.
-
-### 2.5 Expose the API publicly
-
-In the API service → **Settings** → **Networking** → **Generate Domain**.
-
-Railway gives you a URL like `https://savdocrm-api-production-xxx.up.railway.app`.
-Visit `<that URL>/health` — you should see `{ "status": "ok", "db": "up" }`.
-
-Keep this URL — Vercel needs it next.
-
 ---
 
-## 3. Vercel: the web app
+## 3. Vercel: API project
 
-### 3.1 Import the repo
-
-Go to <https://vercel.com/new> → **Import Git Repository** → pick
-`savdocrm`.
-
-On the configuration screen:
-
-- **Framework Preset:** Next.js (auto-detected)
-- **Root Directory:** click **Edit** and set to `apps/web`
-- **Build Command / Install Command / Output Directory:** leave defaults — Vercel auto-detects them and handles npm workspaces correctly when Root Directory points to a workspace package.
-
-### 3.2 Environment variables
-
-Expand **Environment Variables** and add:
+1. <https://vercel.com/new> → **Import Git Repository** → pick `Sokhibjonow/crm` (yes, the same repo as the web project — Vercel allows the same repo to back multiple projects).
+2. **Project Name:** `crm-api`
+3. **Framework Preset:** Other (Vercel will read `vercel.json` from the root directory)
+4. **Root Directory:** click **Edit** → set to `apps/api` → Continue
+5. **Build/Install/Output Commands** — leave default. Our `apps/api/vercel.json` already sets `buildCommand` to run `prisma generate`.
+6. **Environment Variables** — add these before clicking Deploy:
 
 ```env
-NEXT_PUBLIC_API_URL=https://<your-railway-api-domain>
+DATABASE_URL=<Neon pooled connection string>
+DIRECT_URL=<Neon direct connection string>
+JWT_SECRET=<paste from your local .env>
+JWT_EXPIRES_IN=7d
+NODE_ENV=production
+# WEB_ORIGIN you'll come back and fill in after the web project URL is known.
 ```
 
-(from step 2.5 — no trailing slash)
+Click **Deploy**. First build takes a few minutes (Vercel installs the whole monorepo and runs `prisma generate`).
 
-Click **Deploy**.
-
-### 3.3 Wire CORS back to Vercel
-
-After the first Vercel deploy succeeds, copy the production URL (e.g.
-`https://savdocrm.vercel.app`).
-
-Back in Railway → API service → **Variables**, set:
-
-```
-WEB_ORIGIN=https://savdocrm.vercel.app
-```
-
-Railway will redeploy the API with the locked-down CORS origin.
-
-If you later add a custom domain to Vercel, add it as a second value
-comma-separated, e.g.
-`WEB_ORIGIN=https://savdocrm.vercel.app,https://app.savdocrm.uz`.
+7. After build succeeds, copy the production URL (e.g. `https://crm-api.vercel.app`). Visit `<that URL>/health` — should return `{ "status": "ok", "db": "up" }`. If DB shows `down`, double-check `DATABASE_URL`.
 
 ---
 
-## 4. Smoke test
+## 4. Vercel: web project
 
-1. Open `https://savdocrm.vercel.app` → should redirect to `/ru`
-2. Register a store, log in
-3. Create a customer → open the customer card → **Telegram** section → **Создать ссылку**
-4. Open the link on your phone in Telegram → bot replies with greeting in the store's locale
-5. Create an order for that customer → customer receives a Telegram DM
-6. Change order status to CONFIRMED / SHIPPED / DELIVERED → another DM each time
-7. Visit `/ru/reports` — daily revenue chart should have a bar for today
-8. Visit `/ru/dashboard` — KPIs reflect real numbers
+(If you already created `crm-web` earlier, skip to step 4.3 — just add the env var.)
+
+### 4.1 Import
+
+1. <https://vercel.com/new> → **Import Git Repository** → `Sokhibjonow/crm`
+2. **Project Name:** `crm-web`
+3. **Framework Preset:** Next.js (auto-detected)
+4. **Root Directory:** click **Edit** → `apps/web` → Continue
+
+### 4.2 Environment variable
+
+Add **before** clicking Deploy (or in **Settings → Environment Variables** if the project already exists):
+
+```env
+NEXT_PUBLIC_API_URL=https://crm-api.vercel.app
+```
+
+(no trailing slash, no `/api` suffix — that prefix is added inside the fetch client)
+
+### 4.3 Deploy
+
+Vercel rebuilds and the web app now talks to the live API.
+
+---
+
+## 5. Lock CORS to the web origin
+
+Back in the **`crm-api`** project → **Settings → Environment Variables**, set:
+
+```env
+WEB_ORIGIN=https://crm-web.vercel.app
+```
+
+Click **Save**, then **Deployments → ⋯ → Redeploy** the latest deployment to pick up the new env. If you later add a custom domain, comma-separate:
+`WEB_ORIGIN=https://crm-web.vercel.app,https://app.savdocrm.uz`.
+
+---
+
+## 6. Smoke test
+
+1. Open `https://crm-web.vercel.app` → redirects to `/ru`
+2. Register a store → land on `/ru/dashboard`
+3. Create a customer, a product, an order, add a payment
+4. `/ru/reports` shows revenue, `/ru/dashboard` shows live KPIs
+5. `/ru/settings/store` lets you change name/locale (OWNER)
+6. `/ru/settings/profile` lets you edit name/phone and change password
 
 ---
 
 ## Things that are easy to forget
 
-- **One bot replica only.** Telegram long-polling fails if two
-  processes poll the same token. Railway defaults to 1 replica — don't
-  scale up the API service unless you also switch the bot to webhook
-  mode.
-- **`WEB_ORIGIN` matters.** If it's wrong, the browser blocks API
-  calls with CORS errors and the dashboard stays empty.
-- **Migrations must be in the repo.** `migrate:deploy` only applies
-  what's already committed. New schema change → run `migrate:dev
-  --name <whatever>` locally → commit → push → Railway applies it on
-  next deploy.
-- **Secrets hygiene.** Never put real tokens or `JWT_SECRET` values
-  into committed files. They live in `.env` (gitignored) and in the
-  Railway/Vercel dashboards only. If a token ever leaks, revoke it
-  via @BotFather and update `.env` + Railway.
+- **Schema changes need a migration step.** Edit `packages/db/prisma/schema.prisma` → run `npm -w @savdo/db run migrate:dev -- --name <whatever>` locally (against the Neon direct URL) → commit the migration files → push. Vercel doesn't run migrations.
+- **Cold starts are real.** The first request after a few minutes of idle takes 1–3 seconds. Subsequent requests are fast. If this matters, switch the API to a long-running host later (Railway / Fly / a VPS).
+- **The Telegram bot is intentionally off on Vercel.** `process.env.VERCEL` is detected in `TelegramService.onModuleInit` and polling is skipped. To turn it back on, refactor to webhook mode (Telegram POSTs to `/api/telegram/webhook/<secret>`) — that fits Vercel's model.
+- **Two projects, one repo.** Pushing to `main` triggers builds in both `crm-web` and `crm-api` automatically. Each project's deploy status is independent.
+- **Secrets hygiene.** Never commit real tokens or `JWT_SECRET` values. They live in `.env` (gitignored) and in each Vercel project's Environment Variables only.
 
 ---
 
@@ -198,8 +153,6 @@ comma-separated, e.g.
 
 Once everything is wired:
 
-- Pushing to `main` → Vercel rebuilds web + Railway rebuilds API.
+- Pushing to `main` → both `crm-web` and `crm-api` rebuild and redeploy.
 - Schema changes need a `migrate:dev` run locally first, then push.
-- No CI is set up; verification is manual until you add one (GitHub
-  Actions running `npm run typecheck` + Prisma format check is a good
-  first step).
+- No CI is set up; verification is manual. A first CI step worth adding: GitHub Actions running `npm run typecheck` on PR.

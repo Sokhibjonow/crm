@@ -2,12 +2,17 @@
 // Multi-tenant: every tenant-scoped model carries storeId and must be filtered by it in queries.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // "rhel-openssl-3.0.x" is the AWS Lambda runtime used by Vercel functions.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // DIRECT_URL bypasses the connection pooler for prisma migrate. Neon
+  // gives you both a pooled and an unpooled URL.
+  directUrl = env("DIRECT_URL")
 }
 
 // =========================================================================

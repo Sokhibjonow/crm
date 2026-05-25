@@ -17,6 +17,12 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    // Serverless hosts (Vercel) can't run long-polling — switch to webhook
+    // mode separately if you need the bot there. For now we just no-op.
+    if (process.env.VERCEL) {
+      this.logger.warn('Telegram polling disabled on Vercel (serverless runtime).');
+      return;
+    }
     const token = this.config.get<string>('TELEGRAM_BOT_TOKEN');
     if (!token) {
       this.logger.warn('TELEGRAM_BOT_TOKEN not set — bot will not start');
