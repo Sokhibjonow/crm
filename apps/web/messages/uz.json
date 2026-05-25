@@ -32,6 +32,38 @@
     "topProductsRevenue": "Tushum",
     "viewAll": "Hammasi"
   },
+  "team": {
+    "title": "Xodimlar",
+    "addNew": "Xodim qo'shish",
+    "newTitle": "Yangi xodim",
+    "editTitle": "Xodimni tahrirlash",
+    "name": "Ism",
+    "email": "Email",
+    "phone": "Telefon",
+    "role": "Rol",
+    "password": "Parol",
+    "newPassword": "Yangi parol",
+    "status": "Holat",
+    "active": "Faol",
+    "inactive": "Nofaol",
+    "deactivate": "Nofaol qilish",
+    "deactivateConfirm": "Xodim nofaol qilinsinmi?",
+    "resetPassword": "Parolni tiklash",
+    "resetPasswordTitle": "Parolni tiklash",
+    "noResults": "Xodimlar topilmadi",
+    "ownerOnly": "Faqat egasi jamoani boshqarishi mumkin",
+    "errorEmailTaken": "Bu email do'konda allaqachon ishlatilgan",
+    "errorLastOwner": "Kamida bitta faol egasi qolishi kerak",
+    "errorSelfRole": "O'z rolingizni o'zgartirib bo'lmaydi",
+    "errorSelfDeactivate": "O'zingizni nofaol qilolmaysiz",
+    "roleValues": {
+      "OWNER": "Egasi",
+      "MANAGER": "Menejer",
+      "CASHIER": "Kassir",
+      "WAREHOUSE": "Ombor",
+      "COURIER": "Kuryer"
+    }
+  },
   "reports": {
     "title": "Hisobotlar",
     "range": "Davr",

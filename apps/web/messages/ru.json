@@ -32,6 +32,38 @@
     "topProductsRevenue": "Выручка",
     "viewAll": "Все"
   },
+  "team": {
+    "title": "Сотрудники",
+    "addNew": "Добавить сотрудника",
+    "newTitle": "Новый сотрудник",
+    "editTitle": "Редактировать сотрудника",
+    "name": "Имя",
+    "email": "Email",
+    "phone": "Телефон",
+    "role": "Роль",
+    "password": "Пароль",
+    "newPassword": "Новый пароль",
+    "status": "Статус",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "deactivate": "Деактивировать",
+    "deactivateConfirm": "Деактивировать сотрудника?",
+    "resetPassword": "Сбросить пароль",
+    "resetPasswordTitle": "Сброс пароля",
+    "noResults": "Сотрудники не найдены",
+    "ownerOnly": "Только владелец может управлять командой",
+    "errorEmailTaken": "Этот email уже используется в магазине",
+    "errorLastOwner": "Должен оставаться хотя бы один активный владелец",
+    "errorSelfRole": "Нельзя изменить свою роль",
+    "errorSelfDeactivate": "Нельзя деактивировать самого себя",
+    "roleValues": {
+      "OWNER": "Владелец",
+      "MANAGER": "Менеджер",
+      "CASHIER": "Кассир",
+      "WAREHOUSE": "Склад",
+      "COURIER": "Курьер"
+    }
+  },
   "reports": {
     "title": "Отчёты",
     "range": "Период",
