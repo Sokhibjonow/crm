@@ -4,8 +4,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import cors from 'cors';
-import express, { type Express, type Request, type Response } from 'express';
+import express, { type Express, type NextFunction, type Request, type Response } from 'express';
 import { AppModule } from '../src/app.module';
 
 let cachedApp: Express | null = null;
@@ -14,19 +13,41 @@ let bootPromise: Promise<Express> | null = null;
 async function bootstrap(): Promise<Express> {
   const expressApp = express();
 
-  // CORS at the express level — applied BEFORE Nest sees the request — so the
-  // OPTIONS preflight is answered even on routes Nest hasn't registered.
-  // Nest's enableCors didn't fire reliably under @vercel/node cold starts.
+  // Explicit CORS handler — runs first so the OPTIONS preflight always
+  // gets a 204 with the right headers, even on routes Nest hasn't
+  // registered. Doing this here (instead of via Nest's enableCors or the
+  // cors npm package) sidesteps a few issues observed in Vercel cold
+  // starts where middleware ordering caused 4xx on preflight.
   const origins = (process.env.WEB_ORIGIN ?? '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
-  expressApp.use(
-    cors({
-      origin: origins.length > 0 ? origins : true,
-      credentials: true,
-    }),
-  );
+
+  expressApp.use((req: Request, res: Response, next: NextFunction) => {
+    const origin = req.headers.origin;
+    const isAllowed =
+      typeof origin === 'string' && (origins.length === 0 || origins.includes(origin));
+    if (isAllowed) {
+      res.setHeader('Access-Control-Allow-Origin', origin!);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization',
+      );
+      res.setHeader('Access-Control-Max-Age', '86400');
+      res.setHeader('Vary', 'Origin');
+    }
+    if (req.method === 'OPTIONS') {
+      res.statusCode = isAllowed ? 204 : 403;
+      res.end();
+      return;
+    }
+    next();
+  });
 
   const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp), {
     logger: ['error', 'warn', 'log'],
@@ -47,8 +68,6 @@ export default async function handler(req: Request, res: Response): Promise<void
   cachedApp(req, res);
 }
 
-// Vercel: extend the default function timeout because cold-start + Prisma can
-// blow past the 10s Hobby default on first request.
 export const config = {
   maxDuration: 30,
 };
