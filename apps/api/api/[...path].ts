@@ -1,5 +1,8 @@
 // Vercel serverless entrypoint. Boots NestJS once per cold start and reuses
 // the express handler across warm invocations of the same Lambda instance.
+// Filename uses single-bracket catch-all (`[...path]`) — the standard
+// @vercel/node convention. Double-bracket (`[[...]]`) is a Next.js-only
+// syntax and Vercel didn't register the function for non-GET methods.
 
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -13,11 +16,6 @@ let bootPromise: Promise<Express> | null = null;
 async function bootstrap(): Promise<Express> {
   const expressApp = express();
 
-  // Explicit CORS handler — runs first so the OPTIONS preflight always
-  // gets a 204 with the right headers, even on routes Nest hasn't
-  // registered. Doing this here (instead of via Nest's enableCors or the
-  // cors npm package) sidesteps a few issues observed in Vercel cold
-  // starts where middleware ordering caused 4xx on preflight.
   const origins = (process.env.WEB_ORIGIN ?? '')
     .split(',')
     .map((s) => s.trim())
@@ -34,10 +32,7 @@ async function bootstrap(): Promise<Express> {
         'Access-Control-Allow-Methods',
         'GET, POST, PUT, PATCH, DELETE, OPTIONS',
       );
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Content-Type, Authorization',
-      );
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.setHeader('Access-Control-Max-Age', '86400');
       res.setHeader('Vary', 'Origin');
     }
