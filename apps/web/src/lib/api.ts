@@ -1,6 +1,9 @@
 import { getAuthCookie } from './cookies';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+// Empty base = relative URLs. Next.js rewrites in next.config.mjs proxy
+// /api/* to the actual backend, so the browser always sees same-origin
+// requests and no CORS preflight is triggered.
+const API_BASE = '';
 
 export interface ApiErrorBody {
   statusCode: number;

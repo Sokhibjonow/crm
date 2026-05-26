@@ -134,9 +134,9 @@ export async function downloadOrdersExport(
   format: 'csv' | 'xlsx',
 ): Promise<void> {
   const { getAuthCookie } = await import('./cookies');
-  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+  // Relative path — Next.js rewrite proxies to the backend.
   const qs = ordersQuery(params);
-  const url = `${base}/api/orders/export?format=${format}${qs ? `&${qs}` : ''}`;
+  const url = `/api/orders/export?format=${format}${qs ? `&${qs}` : ''}`;
   const token = getAuthCookie();
   const res = await fetch(url, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
