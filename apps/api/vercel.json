@@ -3,6 +3,12 @@
   "buildCommand": "cd ../.. && npm -w @savdo/db run generate",
   "outputDirectory": "public",
   "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",

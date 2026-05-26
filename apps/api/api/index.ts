@@ -1,8 +1,7 @@
-// Vercel serverless entrypoint. Boots NestJS once per cold start and reuses
-// the express handler across warm invocations of the same Lambda instance.
-// Filename uses single-bracket catch-all (`[...path]`) — the standard
-// @vercel/node convention. Double-bracket (`[[...]]`) is a Next.js-only
-// syntax and Vercel didn't register the function for non-GET methods.
+// Vercel serverless entrypoint. All /api/* requests are routed here via
+// vercel.json `rewrites` (req.url stays the original path, so NestJS can
+// route normally). Boots NestJS once per cold start and reuses the
+// express handler across warm invocations.
 
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
