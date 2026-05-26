@@ -3,12 +3,6 @@
   "buildCommand": "cd ../.. && npm -w @savdo/db run generate",
   "outputDirectory": "public",
   "framework": null,
-  "functions": {
-    "api/[...path].ts": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
