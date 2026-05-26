@@ -27,11 +27,11 @@ export function UserBadge() {
     };
   }, [params.locale, router]);
 
-  if (!user) return <span className="text-sm text-slate-400">…</span>;
+  if (!user) return <span className="text-sm text-slate-400 dark:text-slate-500">…</span>;
   return (
     <span className="text-sm">
-      <span className="font-medium">{user.name}</span>
-      <span className="text-slate-500"> · {user.storeName}</span>
+      <span className="font-medium text-slate-900 dark:text-slate-100">{user.name}</span>
+      <span className="text-slate-500 dark:text-slate-400"> · {user.storeName}</span>
     </span>
   );
 }

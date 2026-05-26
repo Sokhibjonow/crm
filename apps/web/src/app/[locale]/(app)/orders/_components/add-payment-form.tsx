@@ -51,11 +51,11 @@ export function AddPaymentForm({ order, onAdded }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg border border-slate-200 bg-white p-4">
+    <form onSubmit={onSubmit} className="rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-3 flex items-baseline justify-between">
         <h3 className="text-sm font-semibold">{t('addPayment')}</h3>
-        <span className="text-xs text-slate-500">
-          {t('remaining')}: <span className="font-medium text-slate-900">{remaining}</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">
+          {t('remaining')}: <span className="font-medium text-slate-900 dark:text-slate-100">{remaining}</span>
         </span>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
@@ -68,7 +68,7 @@ export function AddPaymentForm({ order, onAdded }: Props) {
             required
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-xs">
@@ -76,7 +76,7 @@ export function AddPaymentForm({ order, onAdded }: Props) {
           <select
             value={method}
             onChange={(e) => setMethod(e.target.value as PaymentMethod)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+            className="rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
           >
             {METHODS.map((m) => (
               <option key={m} value={m}>
@@ -92,7 +92,7 @@ export function AddPaymentForm({ order, onAdded }: Props) {
             maxLength={120}
             value={reference}
             onChange={(e) => setReference(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
       </div>
@@ -101,7 +101,7 @@ export function AddPaymentForm({ order, onAdded }: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
         >
           {pending ? tAuth('submitting') : t('addPayment')}
         </button>

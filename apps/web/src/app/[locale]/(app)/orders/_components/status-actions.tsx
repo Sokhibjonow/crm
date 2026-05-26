@@ -52,8 +52,8 @@ export function StatusActions({ order, onUpdated }: Props) {
             disabled={pending !== null}
             className={
               danger
-                ? 'rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 disabled:opacity-60'
-                : 'rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800 disabled:opacity-60'
+                ? 'rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40 disabled:opacity-60'
+                : 'rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800 disabled:opacity-60'
             }
           >
             {pending === s ? '…' : t(`transitions.${s}` as const)}

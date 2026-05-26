@@ -76,7 +76,7 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
   if (!product) {
     return (
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-sm text-slate-500">…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">…</p>
       </main>
     );
   }
@@ -91,7 +91,7 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 disabled:opacity-60"
+            className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40 disabled:opacity-60"
           >
             {t('delete')}
           </button>

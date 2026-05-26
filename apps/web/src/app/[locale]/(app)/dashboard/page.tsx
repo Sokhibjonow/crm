@@ -28,10 +28,10 @@ function StatCard({
   const content = (
     <div
       className={`rounded-lg border p-5 shadow-sm ${
-        highlight ? 'border-red-200 bg-red-50' : 'border-slate-200 bg-white'
+        highlight ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/30' : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
       }`}
     >
-      <div className={`text-sm ${highlight ? 'text-red-700' : 'text-slate-500'}`}>{label}</div>
+      <div className={`text-sm ${highlight ? 'text-red-700 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>{label}</div>
       <div className="mt-2 text-2xl font-semibold">{value}</div>
     </div>
   );
@@ -93,17 +93,17 @@ export default function DashboardPage({ params: { locale } }: Props) {
       <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section>
           <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-medium text-slate-700">{t('recentOrders')}</h2>
+            <h2 className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('recentOrders')}</h2>
             <Link
               href={`/${locale}/orders`}
-              className="text-xs text-slate-500 hover:text-slate-900 hover:underline"
+              className="text-xs text-slate-500 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-slate-100"
             >
               {t('viewAll')} →
             </Link>
           </div>
-          <div className="mt-2 overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
                 <tr>
                   <th className="px-3 py-2 font-medium">{tOrders('orderNumber')}</th>
                   <th className="px-3 py-2 font-medium">{tOrders('customer')}</th>
@@ -114,21 +114,21 @@ export default function DashboardPage({ params: { locale } }: Props) {
               <tbody>
                 {loading && (
                   <tr>
-                    <td colSpan={4} className="px-3 py-4 text-center text-slate-500">
+                    <td colSpan={4} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
                       …
                     </td>
                   </tr>
                 )}
                 {!loading && data && data.recentOrders.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-3 py-4 text-center text-slate-500">
+                    <td colSpan={4} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
                       —
                     </td>
                   </tr>
                 )}
                 {!loading &&
                   data?.recentOrders.map((o) => (
-                    <tr key={o.id} className="border-t border-slate-100">
+                    <tr key={o.id} className="border-t border-slate-100 dark:border-slate-800">
                       <td className="px-3 py-2">
                         <Link
                           href={`/${locale}/orders/${o.id}`}
@@ -137,8 +137,8 @@ export default function DashboardPage({ params: { locale } }: Props) {
                           #{o.number}
                         </Link>
                       </td>
-                      <td className="px-3 py-2 text-slate-700">
-                        {o.customer?.name ?? <span className="text-slate-400">—</span>}
+                      <td className="px-3 py-2 text-slate-700 dark:text-slate-300">
+                        {o.customer?.name ?? <span className="text-slate-400 dark:text-slate-500">—</span>}
                       </td>
                       <td className="px-3 py-2">
                         <div className="flex flex-wrap gap-1">
@@ -156,17 +156,17 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
         <section>
           <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-medium text-slate-700">{t('topProducts')}</h2>
+            <h2 className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('topProducts')}</h2>
             <Link
               href={`/${locale}/products`}
-              className="text-xs text-slate-500 hover:text-slate-900 hover:underline"
+              className="text-xs text-slate-500 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-slate-100"
             >
               {t('viewAll')} →
             </Link>
           </div>
-          <div className="mt-2 overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
                 <tr>
                   <th className="px-3 py-2 font-medium">{tOrders('selectProduct')}</th>
                   <th className="px-3 py-2 font-medium text-right">{t('topProductsQty')}</th>
@@ -178,21 +178,21 @@ export default function DashboardPage({ params: { locale } }: Props) {
               <tbody>
                 {loading && (
                   <tr>
-                    <td colSpan={3} className="px-3 py-4 text-center text-slate-500">
+                    <td colSpan={3} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
                       …
                     </td>
                   </tr>
                 )}
                 {!loading && data && data.topProducts.length === 0 && (
                   <tr>
-                    <td colSpan={3} className="px-3 py-4 text-center text-slate-500">
+                    <td colSpan={3} className="px-3 py-4 text-center text-slate-500 dark:text-slate-400">
                       —
                     </td>
                   </tr>
                 )}
                 {!loading &&
                   data?.topProducts.map((p) => (
-                    <tr key={p.id} className="border-t border-slate-100">
+                    <tr key={p.id} className="border-t border-slate-100 dark:border-slate-800">
                       <td className="px-3 py-2">
                         <Link
                           href={`/${locale}/products/${p.id}`}
@@ -201,7 +201,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
                           {p.name}
                         </Link>
                         {p.sku && (
-                          <span className="ml-2 text-xs text-slate-500">{p.sku}</span>
+                          <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">{p.sku}</span>
                         )}
                       </td>
                       <td className="px-3 py-2 text-right">{formatStock(p.qty, locale)}</td>

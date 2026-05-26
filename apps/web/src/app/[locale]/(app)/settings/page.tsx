@@ -19,10 +19,10 @@ export default function SettingsIndexPage({ params: { locale } }: Props) {
           <Link
             key={it.href}
             href={it.href}
-            className="block rounded-lg border border-slate-200 bg-white p-5 hover:border-slate-300 hover:shadow-sm"
+            className="block rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 dark:border-slate-800 dark:bg-slate-900 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 hover:shadow-sm"
           >
             <div className="font-medium">{it.title}</div>
-            <div className="mt-1 text-sm text-slate-500">{it.desc}</div>
+            <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{it.desc}</div>
           </Link>
         ))}
       </div>

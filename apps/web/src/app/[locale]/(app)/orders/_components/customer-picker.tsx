@@ -39,7 +39,7 @@ export function CustomerPicker({ selected, onSelect }: Props) {
 
   if (selected) {
     return (
-      <div className="flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">
+      <div className="flex items-center gap-2 rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500">
         <span className="font-medium">{selected.name}</span>
         {selected.phone && <span className="text-slate-500">{selected.phone}</span>}
         <button
@@ -65,10 +65,10 @@ export function CustomerPicker({ selected, onSelect }: Props) {
           setQ(e.target.value);
           setOpen(true);
         }}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="w-full rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
       />
       {open && results.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md border border-slate-200 bg-white shadow-lg">
+        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-lg dark:border-slate-800 dark:bg-slate-900">
           {results.map((c) => (
             <li
               key={c.id}
@@ -80,7 +80,7 @@ export function CustomerPicker({ selected, onSelect }: Props) {
               }}
             >
               <div className="font-medium">{c.name}</div>
-              {c.phone && <div className="text-xs text-slate-500">{c.phone}</div>}
+              {c.phone && <div className="text-xs text-slate-500 dark:text-slate-400">{c.phone}</div>}
             </li>
           ))}
         </ul>

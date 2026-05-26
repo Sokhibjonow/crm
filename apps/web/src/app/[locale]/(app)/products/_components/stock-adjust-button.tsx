@@ -52,7 +52,7 @@ export function StockAdjustButton({ product, onAdjusted }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+        className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 text-sm hover:bg-slate-50"
       >
         {tInv('adjustStock')}
       </button>
@@ -62,10 +62,10 @@ export function StockAdjustButton({ product, onAdjusted }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 rounded-md border border-slate-300 bg-white p-2"
+      className="flex items-center gap-2 rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 p-2"
     >
-      <span className="text-xs text-slate-500">
-        {tInv('currentStock')}: <span className="font-medium text-slate-900">{product.stock}</span>
+      <span className="text-xs text-slate-500 dark:text-slate-400">
+        {tInv('currentStock')}: <span className="font-medium text-slate-900 dark:text-slate-100">{product.stock}</span>
       </span>
       <input
         type="number"
@@ -74,7 +74,7 @@ export function StockAdjustButton({ product, onAdjusted }: Props) {
         placeholder={tInv('delta')}
         value={delta}
         onChange={(e) => setDelta(e.target.value)}
-        className="w-20 rounded-md border border-slate-300 px-2 py-1 text-sm"
+        className="w-20 rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm"
       />
       <input
         type="text"
@@ -82,12 +82,12 @@ export function StockAdjustButton({ product, onAdjusted }: Props) {
         placeholder={tInv('reason')}
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        className="w-40 rounded-md border border-slate-300 px-2 py-1 text-sm"
+        className="w-40 rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm"
       />
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-slate-900 px-3 py-1 text-sm text-white disabled:opacity-60"
+        className="rounded-md bg-slate-900 px-3 py-1 text-sm text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
       >
         ✓
       </button>
@@ -97,7 +97,7 @@ export function StockAdjustButton({ product, onAdjusted }: Props) {
           setOpen(false);
           setError(null);
         }}
-        className="rounded-md border border-slate-300 px-2 py-1 text-sm hover:bg-slate-50"
+        className="rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm hover:bg-slate-50"
       >
         ✕
       </button>

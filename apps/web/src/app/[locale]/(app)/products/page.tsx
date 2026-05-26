@@ -66,7 +66,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
         <h1 className="text-2xl font-semibold">{t('title')}</h1>
         <Link
           href={`/${locale}/products/new`}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800"
         >
           + {t('addNew')}
         </Link>
@@ -79,7 +79,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
             placeholder={t('search')}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </form>
         <select
@@ -88,7 +88,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
             setPage(1);
             setCategory(e.target.value);
           }}
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
         >
           <option value="">{t('categoryAll')}</option>
           {categories.map((c) => (
@@ -110,9 +110,9 @@ export default function ProductsPage({ params: { locale } }: Props) {
         </label>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 font-medium">{t('name')}</th>
               <th className="px-4 py-2 font-medium">{t('sku')}</th>
@@ -140,16 +140,16 @@ export default function ProductsPage({ params: { locale } }: Props) {
               data?.items.map((p) => {
                 const low = p.lowStockThreshold > 0 && p.stock <= p.lowStockThreshold;
                 return (
-                  <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
+                  <tr key={p.id} className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
                     <td className="px-4 py-2">
                       <Link
                         href={`/${locale}/products/${p.id}`}
-                        className="font-medium text-slate-900 hover:underline"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                       >
                         {p.name}
                       </Link>
                       {!p.isActive && (
-                        <span className="ml-2 rounded bg-slate-200 px-1.5 py-0.5 text-xs text-slate-600">
+                        <span className="ml-2 rounded bg-slate-200 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                           ✕
                         </span>
                       )}
@@ -161,7 +161,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
                         {formatStock(p.stock, locale)}
                       </span>
                       {low && (
-                        <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-700">
+                        <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-700 dark:bg-red-900/40 dark:text-red-300">
                           {t('lowStockBadge')}
                         </span>
                       )}
@@ -177,7 +177,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
       </div>
 
       {data && data.total > 0 && (
-        <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+        <div className="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
           <span>
             {t('page')} {page} / {totalPages} · {data.total}
           </span>
@@ -186,7 +186,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               ←
             </button>
@@ -194,7 +194,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               →
             </button>

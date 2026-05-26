@@ -112,11 +112,11 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
             <ProductPicker onSelect={handleProductSelect} />
           </div>
           {lines.length === 0 ? (
-            <p className="text-sm text-slate-500">—</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">—</p>
           ) : (
-            <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
                   <tr>
                     <th className="px-4 py-2 font-medium">{t('selectProduct')}</th>
                     <th className="px-4 py-2 font-medium text-right">{t('qty')}</th>
@@ -127,10 +127,10 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
                 </thead>
                 <tbody>
                   {lines.map((l, idx) => (
-                    <tr key={l.productId} className="border-t border-slate-100">
+                    <tr key={l.productId} className="border-t border-slate-100 dark:border-slate-800">
                       <td className="px-4 py-2">
                         <div className="font-medium">{l.name}</div>
-                        {l.sku && <div className="text-xs text-slate-500">{l.sku}</div>}
+                        {l.sku && <div className="text-xs text-slate-500 dark:text-slate-400">{l.sku}</div>}
                       </td>
                       <td className="px-4 py-2 text-right">
                         <input
@@ -141,7 +141,7 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
                           onChange={(e) =>
                             updateLine(idx, { qty: Math.max(1, Number(e.target.value) || 1) })
                           }
-                          className="w-20 rounded-md border border-slate-300 px-2 py-1 text-right text-sm"
+                          className="w-20 rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-right text-sm"
                         />
                       </td>
                       <td className="px-4 py-2 text-right">
@@ -153,7 +153,7 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
                           onChange={(e) =>
                             updateLine(idx, { unitPrice: Number(e.target.value) || 0 })
                           }
-                          className="w-28 rounded-md border border-slate-300 px-2 py-1 text-right text-sm"
+                          className="w-28 rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-right text-sm"
                         />
                       </td>
                       <td className="px-4 py-2 text-right text-slate-700">
@@ -163,7 +163,7 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
                         <button
                           type="button"
                           onClick={() => removeLine(idx)}
-                          className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
+                          className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40"
                         >
                           {t('removeItem')}
                         </button>
@@ -185,7 +185,7 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
               step="0.01"
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2"
+              className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             />
           </label>
           <div className="flex flex-col items-end justify-end gap-1 text-sm">
@@ -206,7 +206,7 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
             maxLength={2000}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
 
@@ -216,7 +216,7 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
           <button
             type="submit"
             disabled={pending || lines.length === 0}
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
           >
             {pending ? tAuth('submitting') : t('create')}
           </button>

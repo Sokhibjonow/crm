@@ -48,7 +48,7 @@ export default function ReportsPage({ params: { locale } }: Props) {
               className={
                 r === days
                   ? 'rounded-md bg-slate-900 px-3 py-1.5 text-white'
-                  : 'rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-50'
+                  : 'rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 hover:bg-slate-50'
               }
             >
               {r === 7 ? t('last7') : r === 30 ? t('last30') : t('last90')}
@@ -58,8 +58,8 @@ export default function ReportsPage({ params: { locale } }: Props) {
       </div>
 
       <section className="mt-6">
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <div className="text-sm text-slate-500">{t('totalRevenue')}</div>
+        <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-5 dark:border-slate-800 dark:bg-slate-900">
+          <div className="text-sm text-slate-500 dark:text-slate-400">{t('totalRevenue')}</div>
           <div className="mt-1 text-3xl font-semibold">
             {data ? formatMoney(data.totalRevenue, locale) : '…'}
           </div>
@@ -69,7 +69,7 @@ export default function ReportsPage({ params: { locale } }: Props) {
       <section className="mt-6">
         <h2 className="mb-2 text-sm font-medium text-slate-700">{t('dailyRevenue')}</h2>
         {loading || !data ? (
-          <div className="h-44 rounded-lg border border-slate-200 bg-white" />
+          <div className="h-44 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" />
         ) : (
           <DailyRevenueBars data={data.daily} locale={locale} />
         )}
@@ -78,9 +78,9 @@ export default function ReportsPage({ params: { locale } }: Props) {
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section>
           <h2 className="mb-2 text-sm font-medium text-slate-700">{t('statusBreakdown')}</h2>
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
                 <tr>
                   <th className="px-3 py-2 font-medium">{t('statusBreakdown')}</th>
                   <th className="px-3 py-2 font-medium text-right">{t('count')}</th>
@@ -96,7 +96,7 @@ export default function ReportsPage({ params: { locale } }: Props) {
                   </tr>
                 )}
                 {data?.statusBreakdown.map((row) => (
-                  <tr key={row.status} className="border-t border-slate-100">
+                  <tr key={row.status} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-3 py-2">
                       <OrderStatusBadge status={row.status} />
                     </td>
@@ -111,9 +111,9 @@ export default function ReportsPage({ params: { locale } }: Props) {
 
         <section>
           <h2 className="mb-2 text-sm font-medium text-slate-700">{t('staff')}</h2>
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
                 <tr>
                   <th className="px-3 py-2 font-medium">{t('user')}</th>
                   <th className="px-3 py-2 font-medium text-right">{t('orders')}</th>
@@ -129,10 +129,10 @@ export default function ReportsPage({ params: { locale } }: Props) {
                   </tr>
                 )}
                 {data?.staff.map((row, idx) => (
-                  <tr key={row.userId ?? `unknown-${idx}`} className="border-t border-slate-100">
+                  <tr key={row.userId ?? `unknown-${idx}`} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-3 py-2">
                       <div className="font-medium">{row.name ?? t('unknown')}</div>
-                      {row.email && <div className="text-xs text-slate-500">{row.email}</div>}
+                      {row.email && <div className="text-xs text-slate-500 dark:text-slate-400">{row.email}</div>}
                     </td>
                     <td className="px-3 py-2 text-right">{formatStock(row.orders, locale)}</td>
                     <td className="px-3 py-2 text-right">{formatMoney(row.revenue, locale)}</td>
@@ -146,9 +146,9 @@ export default function ReportsPage({ params: { locale } }: Props) {
 
       <section className="mt-8">
         <h2 className="mb-2 text-sm font-medium text-slate-700">{t('topCustomers')}</h2>
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2 font-medium">{t('topCustomers')}</th>
                 <th className="px-3 py-2 font-medium text-right">{t('orders')}</th>
@@ -164,10 +164,10 @@ export default function ReportsPage({ params: { locale } }: Props) {
                 </tr>
               )}
               {data?.topCustomers.map((row) => (
-                <tr key={row.id} className="border-t border-slate-100">
+                <tr key={row.id} className="border-t border-slate-100 dark:border-slate-800">
                   <td className="px-3 py-2">
                     <div className="font-medium">{row.name}</div>
-                    {row.phone && <div className="text-xs text-slate-500">{row.phone}</div>}
+                    {row.phone && <div className="text-xs text-slate-500 dark:text-slate-400">{row.phone}</div>}
                   </td>
                   <td className="px-3 py-2 text-right">{formatStock(row.orders, locale)}</td>
                   <td className="px-3 py-2 text-right">{formatMoney(row.total, locale)}</td>

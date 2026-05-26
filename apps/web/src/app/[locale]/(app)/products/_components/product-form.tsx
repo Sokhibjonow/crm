@@ -77,7 +77,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
           maxLength={160}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </label>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -88,7 +88,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             maxLength={80}
             value={sku}
             onChange={(e) => setSku(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -98,7 +98,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             maxLength={80}
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -108,7 +108,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             maxLength={40}
             value={size}
             onChange={(e) => setSize(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -118,7 +118,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             maxLength={40}
             value={color}
             onChange={(e) => setColor(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -129,7 +129,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             step={1}
             value={stock}
             onChange={(e) => setStock(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -140,7 +140,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             step={1}
             value={lowStockThreshold}
             onChange={(e) => setLowStockThreshold(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -151,7 +151,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             step="0.01"
             value={costPrice}
             onChange={(e) => setCostPrice(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -162,7 +162,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             step="0.01"
             value={salePrice}
             onChange={(e) => setSalePrice(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm sm:col-span-2">
@@ -172,7 +172,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             maxLength={160}
             value={supplier}
             onChange={(e) => setSupplier(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
       </div>
@@ -189,7 +189,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
         >
           {pending ? tAuth('submitting') : submitLabel}
         </button>

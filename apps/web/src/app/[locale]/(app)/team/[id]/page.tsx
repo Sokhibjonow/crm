@@ -134,7 +134,7 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
   if (!member || !me) {
     return (
       <main className="mx-auto max-w-xl px-6 py-10">
-        <p className="text-sm text-slate-500">…</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">…</p>
       </main>
     );
   }
@@ -142,7 +142,7 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
   if (me.role !== 'OWNER') {
     return (
       <main className="mx-auto max-w-xl px-6 py-10">
-        <p className="text-sm text-slate-500">{t('ownerOnly')}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('ownerOnly')}</p>
       </main>
     );
   }
@@ -157,14 +157,14 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
           <button
             type="button"
             onClick={onDeactivate}
-            className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+            className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40"
           >
             {t('deactivate')}
           </button>
         )}
       </div>
 
-      <p className="mt-2 text-sm text-slate-500">{member.email}</p>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{member.email}</p>
 
       <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-4">
         <label className="flex flex-col gap-1 text-sm">
@@ -176,7 +176,7 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
             maxLength={80}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -186,7 +186,7 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
             maxLength={40}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -195,7 +195,7 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
             value={role}
             onChange={(e) => setRole(e.target.value as UserRole)}
             disabled={isSelf}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 disabled:bg-slate-50"
+            className="rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:disabled:bg-slate-800"
           >
             {ROLES.map((r) => (
               <option key={r} value={r}>
@@ -218,14 +218,14 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
           >
             {saving ? tAuth('submitting') : tCommon('save')}
           </button>
         </div>
       </form>
 
-      <section className="mt-10 rounded-lg border border-slate-200 bg-white p-4">
+      <section className="mt-10 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 dark:border-slate-800 dark:bg-slate-900">
         <h2 className="text-sm font-semibold">{t('resetPasswordTitle')}</h2>
         <form onSubmit={onResetPassword} className="mt-3 flex items-end gap-3">
           <label className="flex flex-1 flex-col gap-1 text-xs">
@@ -236,13 +236,13 @@ export default function EditMemberPage({ params: { locale, id } }: Props) {
               minLength={8}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             />
           </label>
           <button
             type="submit"
             disabled={pwSaving}
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
           >
             {pwSaving ? tAuth('submitting') : t('resetPassword')}
           </button>

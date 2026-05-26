@@ -56,7 +56,7 @@ export default function InventoryPage({ params: { locale } }: Props) {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
-      {lowOnly && <p className="mt-2 text-sm text-slate-500">{t('lowStockHint')}</p>}
+      {lowOnly && <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('lowStockHint')}</p>}
 
       <div className="mt-6 flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm">
@@ -72,9 +72,9 @@ export default function InventoryPage({ params: { locale } }: Props) {
         </label>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 font-medium">{tProducts('name')}</th>
               <th className="px-4 py-2 font-medium">{tProducts('sku')}</th>
@@ -105,11 +105,11 @@ export default function InventoryPage({ params: { locale } }: Props) {
               data?.items.map((p) => {
                 const low = p.lowStockThreshold > 0 && p.stock <= p.lowStockThreshold;
                 return (
-                  <tr key={p.id} className="border-t border-slate-100">
+                  <tr key={p.id} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-4 py-2">
                       <Link
                         href={`/${locale}/products/${p.id}`}
-                        className="font-medium text-slate-900 hover:underline"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                       >
                         {p.name}
                       </Link>
@@ -135,7 +135,7 @@ export default function InventoryPage({ params: { locale } }: Props) {
       </div>
 
       {data && data.total > 0 && (
-        <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+        <div className="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
           <span>
             {tProducts('page')} {page} / {totalPages} · {data.total}
           </span>
@@ -144,7 +144,7 @@ export default function InventoryPage({ params: { locale } }: Props) {
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               ←
             </button>
@@ -152,7 +152,7 @@ export default function InventoryPage({ params: { locale } }: Props) {
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               →
             </button>

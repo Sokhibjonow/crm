@@ -40,7 +40,7 @@ export class AuthService {
       }
 
       const store = await tx.store.create({
-        data: { name: dto.storeName },
+        data: { name: dto.storeName, locale: 'uz' },
       });
 
       const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);

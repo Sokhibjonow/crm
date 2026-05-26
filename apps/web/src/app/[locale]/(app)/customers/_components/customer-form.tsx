@@ -68,7 +68,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
           maxLength={120}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
@@ -78,7 +78,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
           maxLength={40}
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
@@ -89,7 +89,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
           value={telegram}
           onChange={(e) => setTelegram(e.target.value)}
           placeholder="@username"
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
@@ -99,7 +99,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
           placeholder={tCustomers('tagsHint')}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
@@ -109,7 +109,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
           maxLength={2000}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2"
+          className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </label>
       {error && <p className="text-sm text-red-600">{error}</p>}
@@ -117,7 +117,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60"
         >
           {pending ? tAuth('submitting') : submitLabel}
         </button>

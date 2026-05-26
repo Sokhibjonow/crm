@@ -48,7 +48,7 @@ export default function LoginPage({ params: { locale } }: { params: { locale: st
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -59,21 +59,21 @@ export default function LoginPage({ params: { locale } }: { params: { locale: st
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 disabled:opacity-60 dark:bg-slate-200 dark:text-slate-900"
         >
           {pending ? tAuth('submitting') : tCommon('signIn')}
         </button>
       </form>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         {tAuth('noAccount')}{' '}
-        <Link href={`/${locale}/register`} className="font-medium text-slate-900 underline">
+        <Link href={`/${locale}/register`} className="font-medium text-slate-900 dark:text-slate-100 underline dark:text-slate-100">
           {tCommon('signUp')}
         </Link>
       </p>

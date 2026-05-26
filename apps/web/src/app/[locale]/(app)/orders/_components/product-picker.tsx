@@ -46,10 +46,10 @@ export function ProductPicker({ onSelect }: Props) {
           setQ(e.target.value);
           setOpen(true);
         }}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="w-full rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
       />
       {open && results.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md border border-slate-200 bg-white shadow-lg">
+        <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-lg dark:border-slate-800 dark:bg-slate-900">
           {results.map((p) => (
             <li
               key={p.id}
@@ -62,9 +62,9 @@ export function ProductPicker({ onSelect }: Props) {
             >
               <div className="flex items-baseline justify-between gap-3">
                 <span className="font-medium">{p.name}</span>
-                <span className="text-xs text-slate-500">{p.sku ?? '—'}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{p.sku ?? '—'}</span>
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-slate-500 dark:text-slate-400">
                 {p.salePrice} · stock: {p.stock}
               </div>
             </li>

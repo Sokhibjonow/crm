@@ -12,7 +12,7 @@ export function DailyRevenueBars({ data, locale }: Props) {
   const max = Math.max(1, ...data.map((d) => Number(d.revenue)));
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
+    <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex h-44 items-end gap-1">
         {data.map((d) => {
           const value = Number(d.revenue);
@@ -31,7 +31,7 @@ export function DailyRevenueBars({ data, locale }: Props) {
           );
         })}
       </div>
-      <div className="mt-2 flex justify-between text-xs text-slate-500">
+      <div className="mt-2 flex justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>{data[0]?.date ?? ''}</span>
         <span>{data[data.length - 1]?.date ?? ''}</span>
       </div>

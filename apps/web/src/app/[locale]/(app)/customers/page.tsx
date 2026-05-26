@@ -48,7 +48,7 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
         <h1 className="text-2xl font-semibold">{t('title')}</h1>
         <Link
           href={`/${locale}/customers/new`}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800"
         >
           + {t('addNew')}
         </Link>
@@ -60,13 +60,13 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
           placeholder={t('search')}
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="w-full max-w-md rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="w-full max-w-md rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </form>
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 font-medium">{t('name')}</th>
               <th className="px-4 py-2 font-medium">{t('phone')}</th>
@@ -92,11 +92,11 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
             )}
             {!loading &&
               data?.items.map((c) => (
-                <tr key={c.id} className="border-t border-slate-100 hover:bg-slate-50">
+                <tr key={c.id} className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
                   <td className="px-4 py-2">
                     <Link
                       href={`/${locale}/customers/${c.id}`}
-                      className="font-medium text-slate-900 hover:underline"
+                      className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                     >
                       {c.name}
                     </Link>
@@ -114,7 +114,7 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
       {data && data.total > 0 && (
-        <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+        <div className="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
           <span>
             {t('page')} {page} / {totalPages} · {data.total}
           </span>
@@ -123,7 +123,7 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               ←
             </button>
@@ -131,7 +131,7 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               →
             </button>

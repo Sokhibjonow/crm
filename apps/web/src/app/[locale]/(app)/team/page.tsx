@@ -43,7 +43,7 @@ export default function TeamPage({ params: { locale } }: Props) {
         {isOwner && (
           <Link
             href={`/${locale}/team/new`}
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800"
           >
             + {t('addNew')}
           </Link>
@@ -51,12 +51,12 @@ export default function TeamPage({ params: { locale } }: Props) {
       </div>
 
       {!isOwner && me && (
-        <p className="mt-3 text-sm text-slate-500">{t('ownerOnly')}</p>
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">{t('ownerOnly')}</p>
       )}
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 font-medium">{t('name')}</th>
               <th className="px-4 py-2 font-medium">{t('email')}</th>
@@ -81,12 +81,12 @@ export default function TeamPage({ params: { locale } }: Props) {
             )}
             {!loading &&
               members?.map((m) => (
-                <tr key={m.id} className="border-t border-slate-100 hover:bg-slate-50">
+                <tr key={m.id} className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
                   <td className="px-4 py-2">
                     {isOwner ? (
                       <Link
                         href={`/${locale}/team/${m.id}`}
-                        className="font-medium text-slate-900 hover:underline"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                       >
                         {m.name}
                       </Link>
@@ -94,7 +94,7 @@ export default function TeamPage({ params: { locale } }: Props) {
                       <span className="font-medium">{m.name}</span>
                     )}
                     {m.phone && (
-                      <div className="text-xs text-slate-500">{m.phone}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{m.phone}</div>
                     )}
                   </td>
                   <td className="px-4 py-2 text-slate-700">{m.email}</td>
@@ -103,11 +103,11 @@ export default function TeamPage({ params: { locale } }: Props) {
                   </td>
                   <td className="px-4 py-2">
                     {m.isActive ? (
-                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/40 dark:text-green-300">
                         {t('active')}
                       </span>
                     ) : (
-                      <span className="rounded bg-slate-200 px-2 py-0.5 text-xs text-slate-600">
+                      <span className="rounded bg-slate-200 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                         {t('inactive')}
                       </span>
                     )}

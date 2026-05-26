@@ -102,7 +102,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
         <h1 className="text-2xl font-semibold">{t('title')}</h1>
         <Link
           href={`/${locale}/orders/new`}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800"
         >
           + {t('addNew')}
         </Link>
@@ -115,7 +115,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
             placeholder={t('search')}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </form>
         <select
@@ -124,7 +124,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
             setPage(1);
             setStatus(e.target.value as OrderStatus | '');
           }}
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
         >
           <option value="">{t('allStatuses')}</option>
           {STATUSES.map((s) => (
@@ -136,40 +136,40 @@ export default function OrdersPage({ params: { locale } }: Props) {
       </div>
 
       <div className="mt-3 flex flex-wrap items-end gap-3">
-        <label className="flex flex-col gap-1 text-xs text-slate-500">
+        <label className="flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
           {tExtra('dateFrom')}
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => onDateChange('from', e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-slate-900"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs text-slate-500">
+        <label className="flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
           {tExtra('dateTo')}
           <input
             type="date"
             value={dateTo}
             onChange={(e) => onDateChange('to', e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-slate-900"
           />
         </label>
         {(dateFrom || dateTo) && (
           <button
             type="button"
             onClick={clearDates}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 hover:bg-slate-50"
           >
             {tExtra('clearDates')}
           </button>
         )}
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-xs text-slate-500">{tExtra('export')}:</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">{tExtra('export')}:</span>
           <button
             type="button"
             onClick={() => onExport('csv')}
             disabled={exporting !== null}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 hover:bg-slate-50 disabled:opacity-60"
           >
             {exporting === 'csv' ? '…' : tExtra('exportCsv')}
           </button>
@@ -177,7 +177,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
             type="button"
             onClick={() => onExport('xlsx')}
             disabled={exporting !== null}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 hover:bg-slate-50 disabled:opacity-60"
           >
             {exporting === 'xlsx' ? '…' : tExtra('exportXlsx')}
           </button>
@@ -186,9 +186,9 @@ export default function OrdersPage({ params: { locale } }: Props) {
 
       {exportError && <p className="mt-2 text-sm text-red-600">{exportError}</p>}
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 font-medium">{t('orderNumber')}</th>
               <th className="px-4 py-2 font-medium">{t('customer')}</th>
@@ -215,11 +215,11 @@ export default function OrdersPage({ params: { locale } }: Props) {
             )}
             {!loading &&
               data?.items.map((o) => (
-                <tr key={o.id} className="border-t border-slate-100 hover:bg-slate-50">
+                <tr key={o.id} className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
                   <td className="px-4 py-2">
                     <Link
                       href={`/${locale}/orders/${o.id}`}
-                      className="font-medium text-slate-900 hover:underline"
+                      className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                     >
                       #{o.number}
                     </Link>
@@ -244,7 +244,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
       </div>
 
       {data && data.total > 0 && (
-        <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+        <div className="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
           <span>
             {t('page')} {page} / {totalPages} · {data.total}
           </span>
@@ -253,7 +253,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               ←
             </button>
@@ -261,7 +261,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+              className="rounded-md border border-slate-300 px-3 py-1.5 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               →
             </button>
