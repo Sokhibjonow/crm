@@ -25,7 +25,10 @@ async function bootstrap(): Promise<Express> {
     credentials: true,
   });
 
-  app.setGlobalPrefix('api', { exclude: ['health'] });
+  // On Vercel every request reaches the function via /api/* (file lives in
+  // apps/api/api/), so the global prefix matches and we don't exclude health
+  // — /api/health is the canonical path in production.
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   await app.init();
