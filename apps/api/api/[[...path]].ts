@@ -4,6 +4,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import cors from 'cors';
 import express, { type Express, type Request, type Response } from 'express';
 import { AppModule } from '../src/app.module';
 
@@ -12,22 +13,25 @@ let bootPromise: Promise<Express> | null = null;
 
 async function bootstrap(): Promise<Express> {
   const expressApp = express();
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp), {
-    logger: ['error', 'warn', 'log'],
-  });
 
+  // CORS at the express level — applied BEFORE Nest sees the request — so the
+  // OPTIONS preflight is answered even on routes Nest hasn't registered.
+  // Nest's enableCors didn't fire reliably under @vercel/node cold starts.
   const origins = (process.env.WEB_ORIGIN ?? '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
-  app.enableCors({
-    origin: origins.length > 0 ? origins : true,
-    credentials: true,
+  expressApp.use(
+    cors({
+      origin: origins.length > 0 ? origins : true,
+      credentials: true,
+    }),
+  );
+
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp), {
+    logger: ['error', 'warn', 'log'],
   });
 
-  // On Vercel every request reaches the function via /api/* (file lives in
-  // apps/api/api/), so the global prefix matches and we don't exclude health
-  // — /api/health is the canonical path in production.
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
