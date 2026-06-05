@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_DAYS = 30;
 const TOP_CUSTOMERS_LIMIT = 10;
+const TOP_PRODUCTS_LIMIT = 10;
 
 function startOfUtcDay(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -20,6 +21,10 @@ interface GroupCount {
 interface GroupTotalSum {
   total: Prisma.Decimal | null;
 }
+interface GroupItemSum {
+  qty: number | null;
+  lineTotal: Prisma.Decimal | null;
+}
 
 @Injectable()
 export class ReportsService {
@@ -29,7 +34,7 @@ export class ReportsService {
     const todayStart = startOfUtcDay(new Date());
     const rangeStart = new Date(todayStart.getTime() - (days - 1) * DAY_MS);
 
-    const [payments, statusGroups, staffGroups, topCustomerGroups] =
+    const [payments, statusGroups, staffGroups, topCustomerGroups, topProductGroups] =
       await this.prisma.$transaction([
         this.prisma.payment.findMany({
           where: {
@@ -68,6 +73,19 @@ export class ReportsService {
           _sum: { total: true },
           orderBy: { _sum: { total: 'desc' } },
           take: TOP_CUSTOMERS_LIMIT,
+        }),
+        this.prisma.orderItem.groupBy({
+          by: ['productId'],
+          where: {
+            order: {
+              storeId,
+              createdAt: { gte: rangeStart },
+              status: { not: OrderStatus.CANCELLED },
+            },
+          },
+          _sum: { qty: true, lineTotal: true },
+          orderBy: { _sum: { lineTotal: 'desc' } },
+          take: TOP_PRODUCTS_LIMIT,
         }),
       ]);
 
@@ -158,6 +176,31 @@ export class ReportsService {
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
 
+    // Top products by revenue.
+    const productIds = topProductGroups.map((g) => g.productId);
+    const products = productIds.length
+      ? await this.prisma.product.findMany({
+          where: { id: { in: productIds }, storeId },
+          select: { id: true, name: true, sku: true, stock: true },
+        })
+      : [];
+    const productById = new Map(products.map((p) => [p.id, p]));
+    const topProducts = topProductGroups
+      .map((g) => {
+        const p = productById.get(g.productId);
+        if (!p) return null;
+        const sum = g._sum as GroupItemSum;
+        return {
+          id: p.id,
+          name: p.name,
+          sku: p.sku,
+          stock: p.stock,
+          qty: sum.qty ?? 0,
+          revenue: (sum.lineTotal ?? new Prisma.Decimal(0)).toString(),
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+
     return {
       days,
       rangeStart: rangeStart.toISOString(),
@@ -167,6 +210,7 @@ export class ReportsService {
       statusBreakdown,
       staff,
       topCustomers,
+      topProducts,
     };
   }
 }

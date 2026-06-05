@@ -29,6 +29,15 @@ export interface TopCustomerRow {
   total: string;
 }
 
+export interface TopProductRow {
+  id: string;
+  name: string;
+  sku: string | null;
+  stock: number;
+  qty: number;
+  revenue: string;
+}
+
 export interface ReportsSummary {
   days: number;
   rangeStart: string;
@@ -38,6 +47,7 @@ export interface ReportsSummary {
   statusBreakdown: StatusBreakdownRow[];
   staff: StaffRow[];
   topCustomers: TopCustomerRow[];
+  topProducts: TopProductRow[];
 }
 
 export function getReportsSummary(days: number): Promise<ReportsSummary> {
