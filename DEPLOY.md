@@ -353,3 +353,47 @@ session), unregister the webhook:
 ```powershell
 curl.exe -X DELETE -H "Authorization: Bearer $token" https://api.savdocrm.uz/api/telegram/webhook/setup
 ```
+
+---
+
+## 9. Daily summary cron (Vercel)
+
+`apps/api/vercel.json` registers one daily cron — `/api/cron/daily-summary`
+fires at `0 4 * * *` UTC (09:00 Asia/Tashkent / UTC+5). It builds a
+yesterday-recap per store (orders count, revenue, top product, low-stock
+total) and DMs every linked OWNER.
+
+### 9.1 Set the cron secret
+
+Generate a random ~32-char string (same one-liner as `TELEGRAM_WEBHOOK_SECRET`)
+and add to the `crm-api` Vercel project:
+
+```env
+CRON_SECRET=<random string>
+```
+
+Vercel automatically sends `Authorization: Bearer $CRON_SECRET` on every
+scheduled invocation; `CronController.assertAuthorized` rejects anything else.
+Redeploy `crm-api` so the env change takes effect.
+
+### 9.2 Verify
+
+After deploy, in **Vercel → crm-api → Settings → Cron Jobs** you should see
+one job (`/api/cron/daily-summary`, daily at 04:00 UTC). Click **Run** once
+to fire it manually. Within a few seconds, every OWNER who linked Telegram
+gets a "📊 Сводка за вчера" DM.
+
+Manual trigger from PowerShell (works locally too if CRON_SECRET isn't set):
+
+```powershell
+curl.exe -H "Authorization: Bearer $env:CRON_SECRET" `
+  https://api.savdocrm.uz/api/cron/daily-summary
+```
+
+Returns `{ "ok": true, "storesProcessed": N, "messagesSent": M, "messagesFailed": K }`.
+
+### 9.3 Vercel plan caveat
+
+Hobby plan: max one cron per day per project — fits the daily summary
+exactly. Pro plan: arbitrary schedules. To add a second cron (hourly
+low-stock sweep, weekly report, etc.) you'll need Pro.

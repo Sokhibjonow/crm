@@ -14,6 +14,6 @@ import { TelegramWebhookController } from './telegram.webhook.controller';
     TelegramWebhookController,
   ],
   providers: [TelegramService, TelegramNotificationsService],
-  exports: [TelegramNotificationsService],
+  exports: [TelegramNotificationsService, TelegramService],
 })
 export class TelegramModule {}

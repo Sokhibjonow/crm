@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { ActivityModule } from './modules/activity/activity.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CronModule } from './modules/cron/cron.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthModule } from './modules/health/health.module';
@@ -31,6 +32,7 @@ import { PrismaModule } from './prisma/prisma.module';
     DashboardModule,
     TelegramModule,
     ActivityModule,
+    CronModule,
   ],
 })
 export class AppModule {}
