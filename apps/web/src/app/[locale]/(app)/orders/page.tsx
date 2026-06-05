@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { EmptyState } from '@/components/empty-state';
 import { useCurrentUser } from '@/lib/current-user';
 import { formatMoney } from '@/lib/format';
 import {
@@ -190,6 +191,19 @@ export default function OrdersPage({ params: { locale } }: Props) {
 
       {exportError && <p className="mt-2 text-sm text-red-600">{exportError}</p>}
 
+      {!loading && data && data.total === 0 && !queryQ && !status && !dateFrom && !dateTo ? (
+        <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
+          <EmptyState
+            title={t('noResults')}
+            description={t('search')}
+            cta={
+              can('order.create')
+                ? { href: `/${locale}/orders/new`, label: `+ ${t('addNew')}` }
+                : undefined
+            }
+          />
+        </div>
+      ) : (
       <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
@@ -246,6 +260,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
           </tbody>
         </table>
       </div>
+      )}
 
       {data && data.total > 0 && (
         <div className="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Prisma reads these during `generate` for the schema validator.
+      # Real production URLs live in Vercel — these placeholders are only
+      # so the generator doesn't refuse to run.
+      DATABASE_URL: postgresql://placeholder:placeholder@placeholder.invalid:5432/placeholder?schema=public
+      DIRECT_URL: postgresql://placeholder:placeholder@placeholder.invalid:5432/placeholder?schema=public
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Generate Prisma client
+        run: npm -w @savdo/db run generate
+
+      - name: Typecheck @savdo/api
+        run: npm -w @savdo/api run typecheck
+
+      - name: Typecheck @savdo/web
+        run: npm -w @savdo/web run typecheck

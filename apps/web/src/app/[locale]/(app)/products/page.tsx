@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { EmptyState } from '@/components/empty-state';
 import { useCurrentUser } from '@/lib/current-user';
 import { formatMoney, formatStock } from '@/lib/format';
 import {
@@ -114,6 +115,19 @@ export default function ProductsPage({ params: { locale } }: Props) {
         </label>
       </div>
 
+      {!loading && data && data.total === 0 && !queryQ && !category && !lowStock ? (
+        <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
+          <EmptyState
+            title={t('noResults')}
+            description={t('search')}
+            cta={
+              can('product.create')
+                ? { href: `/${locale}/products/new`, label: `+ ${t('addNew')}` }
+                : undefined
+            }
+          />
+        </div>
+      ) : (
       <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
@@ -179,6 +193,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
           </tbody>
         </table>
       </div>
+      )}
 
       {data && data.total > 0 && (
         <div className="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">

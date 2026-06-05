@@ -12,6 +12,7 @@ import {
 } from '@/lib/customers';
 import { useCurrentUser } from '@/lib/current-user';
 import { CustomerForm } from '../_components/customer-form';
+import { CustomerOrderHistory } from './_components/order-history';
 import { TelegramSection } from './_components/telegram-section';
 
 interface Props {
@@ -103,6 +104,7 @@ export default function EditCustomerPage({ params: { locale, id } }: Props) {
           }}
         />
       </div>
+      <CustomerOrderHistory customerId={customer.id} locale={locale} />
       <TelegramSection customerId={customer.id} />
     </main>
   );

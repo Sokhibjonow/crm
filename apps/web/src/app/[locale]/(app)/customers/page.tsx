@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { type CustomerListResult, listCustomers } from '@/lib/customers';
+import { EmptyState } from '@/components/empty-state';
 import { useCurrentUser } from '@/lib/current-user';
 
 const PAGE_SIZE = 25;
@@ -68,6 +69,19 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
         />
       </form>
 
+      {!loading && data && data.total === 0 && !queryQ ? (
+        <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
+          <EmptyState
+            title={t('noResults')}
+            description={t('search')}
+            cta={
+              can('customer.create')
+                ? { href: `/${locale}/customers/new`, label: `+ ${t('addNew')}` }
+                : undefined
+            }
+          />
+        </div>
+      ) : (
       <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
@@ -114,6 +128,7 @@ export default function CustomersPage({ params: { locale } }: { params: { locale
           </tbody>
         </table>
       </div>
+      )}
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
