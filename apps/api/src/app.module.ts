@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { ActivityModule } from './modules/activity/activity.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
@@ -29,6 +30,7 @@ import { PrismaModule } from './prisma/prisma.module';
     TeamModule,
     DashboardModule,
     TelegramModule,
+    ActivityModule,
   ],
 })
 export class AppModule {}

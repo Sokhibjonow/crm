@@ -54,6 +54,7 @@ export function AppShell({ locale, children }: Props) {
     products: { href: `/${locale}/products`, label: tNav('products') },
     inventory: { href: `/${locale}/inventory`, label: tNav('inventory') },
     reports: { href: `/${locale}/reports`, label: tNav('reports') },
+    activity: { href: `/${locale}/activity`, label: tNav('activity') },
     team: { href: `/${locale}/team`, label: tNav('team') },
     settings: { href: `/${locale}/settings`, label: tNav('settings') },
   };
