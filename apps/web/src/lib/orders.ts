@@ -49,6 +49,8 @@ export interface Order {
   discount: string;
   total: string;
   paidAmount: string;
+  promoCode: string | null;
+  promoCodeId: string | null;
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -97,6 +99,7 @@ export interface CreateOrderInput {
   customerId?: string;
   items: OrderItemInput[];
   discount?: number;
+  promoCode?: string;
   notes?: string;
 }
 

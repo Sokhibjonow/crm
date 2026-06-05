@@ -69,6 +69,11 @@ enum DeliveryStatus {
   RETURNED
 }
 
+enum PromoCodeType {
+  PERCENT
+  FIXED
+}
+
 // =========================================================================
 // Tenant root
 // =========================================================================
@@ -87,6 +92,7 @@ model Store {
   products     Product[]
   orders       Order[]
   activityLogs ActivityLog[]
+  promoCodes   PromoCode[]
 }
 
 // =========================================================================
@@ -188,22 +194,47 @@ model Order {
   discount      Decimal       @default(0) @db.Decimal(14, 2)
   total         Decimal       @default(0) @db.Decimal(14, 2)
   paidAmount    Decimal       @default(0) @db.Decimal(14, 2)
+  promoCodeId   String?
+  promoCode     String?       // snapshot the code text at redemption time
   notes         String?
   createdById   String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  store     Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  customer  Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  createdBy User?       @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  items     OrderItem[]
-  payments  Payment[]
-  delivery  Delivery?
+  store        Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer     Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  createdBy    User?       @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  promo        PromoCode?  @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+  items        OrderItem[]
+  payments     Payment[]
+  delivery     Delivery?
 
   @@unique([storeId, number])
   @@index([storeId, status])
   @@index([storeId, createdAt])
   @@index([storeId, customerId])
+}
+
+model PromoCode {
+  id             String        @id @default(cuid())
+  storeId        String
+  code           String        // user-typed code, e.g. "SUMMER15"
+  type           PromoCodeType
+  value          Decimal       @db.Decimal(14, 2) // % if PERCENT, soms if FIXED
+  minOrderTotal  Decimal       @default(0) @db.Decimal(14, 2)
+  maxUses        Int?          // null = unlimited
+  usedCount      Int           @default(0)
+  validFrom      DateTime?
+  validUntil     DateTime?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  store  Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@unique([storeId, code])
+  @@index([storeId, isActive])
 }
 
 model OrderItem {

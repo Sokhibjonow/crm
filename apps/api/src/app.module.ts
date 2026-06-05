@@ -10,6 +10,7 @@ import { HealthModule } from './modules/health/health.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductsModule } from './modules/products/products.module';
+import { PromoModule } from './modules/promo/promo.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { StoresModule } from './modules/stores/stores.module';
 import { TeamModule } from './modules/team/team.module';
@@ -25,6 +26,7 @@ import { PrismaModule } from './prisma/prisma.module';
     StoresModule,
     CustomersModule,
     ProductsModule,
+    PromoModule,
     OrdersModule,
     InventoryModule,
     ReportsModule,

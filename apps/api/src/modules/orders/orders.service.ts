@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@savdo/db';
 import { PrismaService } from '../../prisma/prisma.service';
+import { PromoService } from '../promo/promo.service';
 import { TelegramNotificationsService } from '../telegram/telegram.notifications';
 import type { AddItemDto } from './dto/add-item.dto';
 import type { AddPaymentDto } from './dto/add-payment.dto';
@@ -49,6 +50,7 @@ export class OrdersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly telegram: TelegramNotificationsService,
+    private readonly promo: PromoService,
   ) {}
 
   async list(storeId: string, query: ListOrdersDto) {
@@ -176,7 +178,20 @@ export class OrdersService {
         (s, r) => s.plus(r.lineTotal),
         new Prisma.Decimal(0),
       );
-      const discount = new Prisma.Decimal(dto.discount ?? 0);
+
+      // Promo code, if any, wins over a literal discount. Resolved inside the
+      // same transaction so usedCount + the order row are written atomically.
+      let discount = new Prisma.Decimal(dto.discount ?? 0);
+      let promoCodeId: string | null = null;
+      let promoCodeSnap: string | null = null;
+      if (dto.promoCode) {
+        const resolved = await this.promo.resolve(storeId, dto.promoCode, subtotal);
+        discount = resolved.discount;
+        promoCodeId = resolved.promoId;
+        promoCodeSnap = resolved.code;
+        await this.promo.markUsed(tx, resolved.promoId);
+      }
+
       const total = subtotal.minus(discount);
       const totalNonNeg = total.lt(0) ? new Prisma.Decimal(0) : total;
 
@@ -191,6 +206,8 @@ export class OrdersService {
           discount,
           total: totalNonNeg,
           paidAmount: new Prisma.Decimal(0),
+          promoCodeId,
+          promoCode: promoCodeSnap,
           notes: dto.notes ?? null,
           createdById: userId ?? null,
           items: {

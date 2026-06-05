@@ -44,6 +44,14 @@ export class CreateOrderDto {
   @Min(0)
   discount?: number;
 
+  // Either a literal discount (above) or a redeemable code (here). If both
+  // are sent, the promo code wins and `discount` is overwritten with the
+  // resolved value.
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  promoCode?: string;
+
   @IsOptional()
   @IsString()
   @MaxLength(2000)

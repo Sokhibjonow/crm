@@ -18,6 +18,9 @@ export default function SettingsIndexPage({ params: { locale } }: Props) {
     can('settings.profile')
       ? { href: `/${locale}/settings/profile`, title: t('profile'), desc: t('profileDesc') }
       : null,
+    can('settings.store')
+      ? { href: `/${locale}/settings/promo`, title: t('promo'), desc: t('promoDesc') }
+      : null,
   ].filter(Boolean) as Array<{ href: string; title: string; desc: string }>;
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">

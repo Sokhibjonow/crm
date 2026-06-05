@@ -3,10 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { ApiError } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
 import { createOrder, type CreateOrderInput } from '@/lib/orders';
 import type { Product } from '@/lib/products';
+import { previewPromoCode } from '@/lib/promo';
 import { CustomerPicker } from '../_components/customer-picker';
 import { ProductPicker } from '../_components/product-picker';
 
@@ -26,6 +28,10 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
   const [customer, setCustomer] = useState<{ id: string; name: string; phone: string | null } | null>(null);
   const [lines, setLines] = useState<Line[]>([]);
   const [discount, setDiscount] = useState('0');
+  const [promoInput, setPromoInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoPending, setPromoPending] = useState(false);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -63,8 +69,37 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
     () => lines.reduce((s, l) => s + l.qty * l.unitPrice, 0),
     [lines],
   );
-  const discountNum = Number(discount) || 0;
+  // Promo discount wins over the manual discount field when present, mirroring
+  // the API: the literal `discount` is ignored if `promoCode` validates.
+  const discountNum = appliedPromo ? appliedPromo.discount : Number(discount) || 0;
   const total = Math.max(0, subtotal - discountNum);
+
+  async function applyPromo() {
+    const code = promoInput.trim();
+    if (!code) return;
+    if (lines.length === 0) {
+      setPromoError(t('errorPromoNoItems'));
+      return;
+    }
+    setPromoError(null);
+    setPromoPending(true);
+    try {
+      const res = await previewPromoCode(code, subtotal);
+      setAppliedPromo({ code: res.code, discount: Number(res.discount) });
+      toast.success(t('promoApplied'));
+    } catch (err) {
+      setAppliedPromo(null);
+      setPromoError(err instanceof ApiError ? err.message : tAuth('errorGeneric'));
+    } finally {
+      setPromoPending(false);
+    }
+  }
+
+  function clearPromo() {
+    setAppliedPromo(null);
+    setPromoInput('');
+    setPromoError(null);
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -79,7 +114,10 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
           qty: l.qty,
           unitPrice: l.unitPrice,
         })),
-        discount: discountNum,
+        // Either send the resolved promo code (server recomputes the
+        // discount) OR the manual discount value — never both.
+        promoCode: appliedPromo?.code,
+        discount: appliedPromo ? undefined : Number(discount) || 0,
         notes: notes.trim() || undefined,
       };
       const created = await createOrder(input);
@@ -177,22 +215,72 @@ export default function NewOrderPage({ params: { locale } }: { params: { locale:
         </section>
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1 text-sm">
-            {t('discount')}
-            <input
-              type="number"
-              min={0}
-              step="0.01"
-              value={discount}
-              onChange={(e) => setDiscount(e.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-            />
-          </label>
+          <div className="flex flex-col gap-3">
+            <label className="flex flex-col gap-1 text-sm">
+              {t('discount')}
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={discount}
+                onChange={(e) => setDiscount(e.target.value)}
+                disabled={!!appliedPromo}
+                className="rounded-md border border-slate-300 px-3 py-2 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              />
+            </label>
+            <div className="flex flex-col gap-1 text-sm">
+              <label htmlFor="promo-input" className="text-sm">
+                {t('promoCode')}
+              </label>
+              {appliedPromo ? (
+                <div className="flex items-center justify-between rounded-md border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/40">
+                  <span>
+                    <span className="font-medium">{appliedPromo.code}</span>
+                    <span className="ml-2 text-slate-600 dark:text-slate-400">
+                      −{formatMoney(appliedPromo.discount, locale)}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={clearPromo}
+                    className="text-xs text-red-700 hover:underline dark:text-red-400"
+                  >
+                    {t('promoClear')}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    id="promo-input"
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    placeholder={t('promoPlaceholder')}
+                    className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyPromo}
+                    disabled={!promoInput.trim() || promoPending}
+                    className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    {promoPending ? '…' : t('promoApply')}
+                  </button>
+                </div>
+              )}
+              {promoError && <p className="text-xs text-red-600">{promoError}</p>}
+            </div>
+          </div>
           <div className="flex flex-col items-end justify-end gap-1 text-sm">
             <div className="text-slate-500">
               {t('subtotal')}:{' '}
               <span className="text-slate-900">{formatMoney(subtotal, locale)}</span>
             </div>
+            {discountNum > 0 && (
+              <div className="text-sm text-slate-500">
+                {t('discount')}: −{formatMoney(discountNum, locale)}
+              </div>
+            )}
             <div className="text-lg font-semibold">
               {t('total')}: {formatMoney(total, locale)}
             </div>
