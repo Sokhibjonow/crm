@@ -149,7 +149,9 @@ model Product {
   storeId   String
   name      String
   sku       String?
+  barcode   String?  // scannable barcode/EAN; used by /sale (quick-sale) lookups
   category  String?
+  tags      String[] @default([])
   size      String?
   color     String?
   stock     Int      @default(0)
@@ -165,6 +167,7 @@ model Product {
   orderItems OrderItem[]
 
   @@unique([storeId, sku])
+  @@unique([storeId, barcode])
   @@index([storeId])
   @@index([storeId, category])
 }

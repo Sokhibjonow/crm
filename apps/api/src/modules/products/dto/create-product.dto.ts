@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  IsArray,
   IsBoolean,
   IsInt,
   IsNumber,
@@ -24,7 +26,19 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   @MaxLength(80)
+  barcode?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
   category?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  @IsString({ each: true })
+  @MaxLength(40, { each: true })
+  tags?: string[];
 
   @IsOptional()
   @IsString()

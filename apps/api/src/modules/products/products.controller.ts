@@ -41,6 +41,12 @@ export class ProductsController {
     return this.products.categories(user.storeId);
   }
 
+  @Get('tags')
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER, Role.WAREHOUSE)
+  tags(@CurrentUser() user: JwtPayload) {
+    return this.products.tags(user.storeId);
+  }
+
   @Get(':id')
   @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER, Role.WAREHOUSE)
   get(@CurrentUser() user: JwtPayload, @Param('id') id: string) {

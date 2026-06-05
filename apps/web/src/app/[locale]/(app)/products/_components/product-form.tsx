@@ -25,7 +25,9 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
 
   const [name, setName] = useState(initial?.name ?? '');
   const [sku, setSku] = useState(initial?.sku ?? '');
+  const [barcode, setBarcode] = useState(initial?.barcode ?? '');
   const [category, setCategory] = useState(initial?.category ?? '');
+  const [tagsInput, setTagsInput] = useState((initial?.tags ?? []).join(', '));
   const [size, setSize] = useState(initial?.size ?? '');
   const [color, setColor] = useState(initial?.color ?? '');
   const [stock, setStock] = useState(String(initial?.stock ?? 0));
@@ -44,10 +46,16 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
     setError(null);
     setPending(true);
     try {
+      const tags = tagsInput
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
       await onSubmit({
         name: name.trim(),
         sku: sku.trim() || undefined,
+        barcode: barcode.trim() || undefined,
         category: category.trim() || undefined,
+        tags,
         size: size.trim() || undefined,
         color: color.trim() || undefined,
         stock: num(stock),
@@ -60,7 +68,8 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
       toast.success(initial ? tCommon('saved') : tCommon('created'));
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setError(t('errorSkuTaken'));
+        // 409 fires for SKU or barcode collisions; show the message from the API.
+        setError(err.message || t('errorSkuTaken'));
       } else {
         setError(tAuth('errorGeneric'));
       }
@@ -91,6 +100,27 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
             maxLength={80}
             value={sku}
             onChange={(e) => setSku(e.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          {t('barcode')}
+          <input
+            type="text"
+            maxLength={80}
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            placeholder={t('barcodeHint')}
+            className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm sm:col-span-2">
+          {t('tags')}
+          <input
+            type="text"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder={t('tagsHint')}
             className="rounded-md border border-slate-300 px-3 py-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </label>

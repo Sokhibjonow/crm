@@ -13,6 +13,15 @@ import type { UpdateProductDto } from './dto/update-product.dto';
 
 const DEFAULT_TAKE = 25;
 
+function uniqueConflictMessage(err: Prisma.PrismaClientKnownRequestError): string {
+  // P2002 meta.target is either a string or string[] naming the unique
+  // index. Surface a specific message so the UI can hint "SKU vs barcode".
+  const target = (err.meta as { target?: string | string[] } | undefined)?.target;
+  const str = Array.isArray(target) ? target.join(',') : (target ?? '');
+  if (str.includes('barcode')) return 'Product with this barcode already exists';
+  return 'Product with this SKU already exists';
+}
+
 @Injectable()
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -25,10 +34,15 @@ export class ProductsService {
     const where: Prisma.ProductWhereInput = { storeId };
     if (!query.includeArchived) where.isActive = true;
     if (query.category) where.category = query.category;
+    if (query.tags && query.tags.length > 0) {
+      // `hasEvery` = all selected tags must be present on the product row.
+      where.tags = { hasEvery: query.tags };
+    }
     if (query.q) {
       where.OR = [
         { name: { contains: query.q, mode: 'insensitive' } },
         { sku: { contains: query.q, mode: 'insensitive' } },
+        { barcode: { contains: query.q, mode: 'insensitive' } },
         { category: { contains: query.q, mode: 'insensitive' } },
       ];
     }
@@ -61,6 +75,24 @@ export class ProductsService {
     return rows.map((r) => r.category).filter((c): c is string => !!c);
   }
 
+  /**
+   * Distinct tags used by products in this store, alphabetised. Powers the
+   * tag-chip filter on the products page.
+   */
+  async tags(storeId: string): Promise<string[]> {
+    const rows = await this.prisma.product.findMany({
+      where: { storeId },
+      select: { tags: true },
+    });
+    const seen = new Set<string>();
+    for (const r of rows) {
+      for (const t of r.tags) {
+        if (t) seen.add(t);
+      }
+    }
+    return Array.from(seen).sort((a, b) => a.localeCompare(b));
+  }
+
   async get(storeId: string, id: string) {
     const product = await this.prisma.product.findFirst({ where: { id, storeId } });
     if (!product) throw new NotFoundException('Product not found');
@@ -74,7 +106,9 @@ export class ProductsService {
           storeId,
           name: dto.name,
           sku: dto.sku || null,
+          barcode: dto.barcode || null,
           category: dto.category || null,
+          tags: dto.tags ?? [],
           size: dto.size || null,
           color: dto.color || null,
           stock: dto.stock ?? 0,
@@ -87,7 +121,7 @@ export class ProductsService {
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-        throw new ConflictException('Product with this SKU already exists');
+        throw new ConflictException(uniqueConflictMessage(err));
       }
       throw err;
     }
@@ -101,7 +135,9 @@ export class ProductsService {
         data: {
           ...(dto.name !== undefined && { name: dto.name }),
           ...(dto.sku !== undefined && { sku: dto.sku || null }),
+          ...(dto.barcode !== undefined && { barcode: dto.barcode || null }),
           ...(dto.category !== undefined && { category: dto.category || null }),
+          ...(dto.tags !== undefined && { tags: dto.tags }),
           ...(dto.size !== undefined && { size: dto.size || null }),
           ...(dto.color !== undefined && { color: dto.color || null }),
           ...(dto.stock !== undefined && { stock: dto.stock }),
@@ -116,7 +152,7 @@ export class ProductsService {
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-        throw new ConflictException('Product with this SKU already exists');
+        throw new ConflictException(uniqueConflictMessage(err));
       }
       throw err;
     }

@@ -119,7 +119,9 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
           initial={{
             name: product.name,
             sku: product.sku ?? undefined,
+            barcode: product.barcode ?? undefined,
             category: product.category ?? undefined,
+            tags: product.tags,
             size: product.size ?? undefined,
             color: product.color ?? undefined,
             stock: product.stock,

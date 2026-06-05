@@ -9,6 +9,7 @@ import { formatMoney, formatStock } from '@/lib/format';
 import {
   listProductCategories,
   listProducts,
+  listProductTags,
   type ProductListResult,
 } from '@/lib/products';
 
@@ -25,14 +26,17 @@ export default function ProductsPage({ params: { locale } }: Props) {
   const [q, setQ] = useState('');
   const [queryQ, setQueryQ] = useState('');
   const [category, setCategory] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [lowStock, setLowStock] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
+  const [allTags, setAllTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [data, setData] = useState<ProductListResult | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     listProductCategories().then(setCategories).catch(() => {});
+    listProductTags().then(setAllTags).catch(() => {});
   }, []);
 
   const load = useCallback(async () => {
@@ -41,6 +45,7 @@ export default function ProductsPage({ params: { locale } }: Props) {
       const res = await listProducts({
         q: queryQ || undefined,
         category: category || undefined,
+        tags: selectedTags.length > 0 ? selectedTags : undefined,
         lowStock: lowStock || undefined,
         page,
         take: PAGE_SIZE,
@@ -49,7 +54,26 @@ export default function ProductsPage({ params: { locale } }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [queryQ, category, lowStock, page]);
+  }, [queryQ, category, selectedTags, lowStock, page]);
+
+  function toggleTag(tag: string) {
+    setPage(1);
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  }
+
+  function resetFilters() {
+    setQ('');
+    setQueryQ('');
+    setCategory('');
+    setSelectedTags([]);
+    setLowStock(false);
+    setPage(1);
+  }
+
+  const hasActiveFilters =
+    !!queryQ || !!category || selectedTags.length > 0 || lowStock;
 
   useEffect(() => {
     load();
@@ -113,9 +137,41 @@ export default function ProductsPage({ params: { locale } }: Props) {
           />
           {t('lowStockOnly')}
         </label>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 underline-offset-2 hover:underline"
+          >
+            {t('filtersReset')}
+          </button>
+        )}
       </div>
 
-      {!loading && data && data.total === 0 && !queryQ && !category && !lowStock ? (
+      {allTags.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-slate-500 dark:text-slate-400">{t('tagsFilter')}:</span>
+          {allTags.map((tag) => {
+            const active = selectedTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => toggleTag(tag)}
+                className={
+                  active
+                    ? 'rounded-full bg-slate-900 px-3 py-1 text-xs text-white dark:bg-slate-200 dark:text-slate-900'
+                    : 'rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800'
+                }
+              >
+                {active ? '✓ ' : ''}{tag}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {!loading && data && data.total === 0 && !hasActiveFilters ? (
         <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
           <EmptyState
             title={t('noResults')}
