@@ -32,6 +32,10 @@
     "topProductsRevenue": "Выручка",
     "viewAll": "Все"
   },
+  "search": {
+    "placeholder": "Поиск клиентов, товаров, заказов…",
+    "noResults": "Ничего не найдено"
+  },
   "team": {
     "title": "Сотрудники",
     "addNew": "Добавить сотрудника",
@@ -114,6 +118,7 @@
     "create": "Создать заказ",
     "page": "Страница",
     "removeItem": "Удалить",
+    "printReceipt": "Печать чека",
     "addPayment": "Добавить оплату",
     "payments": "Платежи",
     "paymentAmount": "Сумма",

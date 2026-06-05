@@ -14,3 +14,19 @@ html,
 body {
   height: 100%;
 }
+
+/* Print: ignore dark theme, white paper, no shadows / borders bleed. */
+@media print {
+  html,
+  html.dark,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    color-scheme: light;
+  }
+  /* Tailwind `print:hidden` works on its own; this is just a safety net for
+     any leftover sticky positioning. */
+  .sticky {
+    position: static !important;
+  }
+}

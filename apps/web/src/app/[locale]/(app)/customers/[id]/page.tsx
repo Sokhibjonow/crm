@@ -11,6 +11,7 @@ import {
   updateCustomer,
 } from '@/lib/customers';
 import { useCurrentUser } from '@/lib/current-user';
+import { Skeleton } from '@/components/skeleton';
 import { CustomerForm } from '../_components/customer-form';
 import { CustomerOrderHistory } from './_components/order-history';
 import { TelegramSection } from './_components/telegram-section';
@@ -71,7 +72,13 @@ export default function EditCustomerPage({ params: { locale, id } }: Props) {
   if (!customer) {
     return (
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-sm text-slate-500 dark:text-slate-400">…</p>
+        <Skeleton className="h-8 w-56" />
+        <div className="mt-6 flex max-w-xl flex-col gap-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
       </main>
     );
   }

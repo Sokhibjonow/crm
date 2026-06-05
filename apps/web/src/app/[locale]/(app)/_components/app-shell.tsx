@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { GlobalSearch } from '@/components/global-search';
 import { LangSwitcher } from '@/components/lang-switcher';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { useCurrentUser } from '@/lib/current-user';
@@ -61,7 +62,7 @@ export function AppShell({ locale, children }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 sm:px-6">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 sm:px-6 print:hidden">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -101,6 +102,7 @@ export function AppShell({ locale, children }: Props) {
             {tCommon('appName')}
           </Link>
         </div>
+        <GlobalSearch />
         <div className="flex items-center gap-2 sm:gap-3">
           <LangSwitcher />
           <ThemeSwitcher />
@@ -113,7 +115,7 @@ export function AppShell({ locale, children }: Props) {
 
       <div className="flex flex-1">
         {/* Desktop sidebar */}
-        <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 md:block">
+        <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 md:block print:hidden">
           <Sidebar items={items} pathname={pathname} />
         </aside>
 

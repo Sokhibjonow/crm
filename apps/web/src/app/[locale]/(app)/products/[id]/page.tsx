@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/skeleton';
 import { ApiError } from '@/lib/api';
 import { useCurrentUser } from '@/lib/current-user';
 import {
@@ -78,7 +79,14 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
   if (!product) {
     return (
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-sm text-slate-500 dark:text-slate-400">…</p>
+        <Skeleton className="h-8 w-56" />
+        <div className="mt-6 grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
+          <Skeleton className="h-10 w-full sm:col-span-2" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
       </main>
     );
   }

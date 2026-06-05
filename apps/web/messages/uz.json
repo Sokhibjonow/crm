@@ -32,6 +32,10 @@
     "topProductsRevenue": "Tushum",
     "viewAll": "Hammasi"
   },
+  "search": {
+    "placeholder": "Mijozlar, mahsulotlar, buyurtmalarni qidirish…",
+    "noResults": "Hech narsa topilmadi"
+  },
   "team": {
     "title": "Xodimlar",
     "addNew": "Xodim qo'shish",
@@ -114,6 +118,7 @@
     "create": "Buyurtma yaratish",
     "page": "Sahifa",
     "removeItem": "O'chirish",
+    "printReceipt": "Chekni chop etish",
     "addPayment": "To'lov qo'shish",
     "payments": "To'lovlar",
     "paymentAmount": "Summa",

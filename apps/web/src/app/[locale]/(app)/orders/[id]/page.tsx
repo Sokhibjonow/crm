@@ -2,12 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/skeleton';
 import { useCurrentUser } from '@/lib/current-user';
 import { formatMoney } from '@/lib/format';
 import { getOrder, removeOrderItem, type Order } from '@/lib/orders';
 import { AddPaymentForm } from '../_components/add-payment-form';
 import { OrderStatusBadge, PaymentStatusBadge } from '../_components/status-badge';
 import { StatusActions } from '../_components/status-actions';
+import { OrderReceipt } from './_components/order-receipt';
 
 interface Props {
   params: { locale: string; id: string };
@@ -55,7 +57,13 @@ export default function OrderDetailPage({ params: { locale, id } }: Props) {
   if (!order) {
     return (
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-sm text-slate-500 dark:text-slate-400">…</p>
+        <Skeleton className="h-8 w-64" />
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
+        <Skeleton className="mt-8 h-48 w-full" />
       </main>
     );
   }
@@ -65,7 +73,9 @@ export default function OrderDetailPage({ params: { locale, id } }: Props) {
   const canAddPayment = can('order.payment.add');
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <>
+      <OrderReceipt order={order} locale={locale} />
+      <main className="mx-auto max-w-4xl px-6 py-10 print:hidden">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">
@@ -74,7 +84,16 @@ export default function OrderDetailPage({ params: { locale, id } }: Props) {
           <OrderStatusBadge status={order.status} />
           <PaymentStatusBadge status={order.paymentStatus} />
         </div>
-        <StatusActions order={order} onUpdated={setOrder} />
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            {t('printReceipt')}
+          </button>
+          <StatusActions order={order} onUpdated={setOrder} />
+        </div>
       </div>
 
       <section className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -213,6 +232,7 @@ export default function OrderDetailPage({ params: { locale, id } }: Props) {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </>
   );
 }
