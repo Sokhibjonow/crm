@@ -5,7 +5,7 @@ Architecture:
 - **`apps/web`** (Next.js 14) → Vercel project `crm-web`
 - **`apps/api`** (NestJS) → Vercel project `crm-api` (serverless functions wrapping the Nest app)
 - **PostgreSQL** → **Neon** (serverless Postgres, free tier, no card)
-- **Telegram bot** → disabled on Vercel. Long-polling needs a continuously running process, which Vercel functions cannot provide. Re-enable in webhook mode later if needed.
+- **Telegram bot** → on Vercel, runs in **webhook mode** (Telegram POSTs every update to `/api/telegram/webhook`). Locally it's still long-polling — no setup needed in dev. See section 8.
 
 Tradeoffs vs a long-running host (Railway/Fly):
 
@@ -255,3 +255,101 @@ If you also want the bare domain to redirect to the app:
 3. Vercel will treat one of the two as primary and 301 the other to it.
    Pick whichever feels right (most SaaS apps keep `app.` as the canonical
    product URL and leave the apex for a marketing site).
+
+---
+
+## 8. Telegram bot on Vercel (webhook mode)
+
+Locally the bot uses **long-polling** (`bot.start()`) — no config needed beyond
+`TELEGRAM_BOT_TOKEN` in `.env`. On Vercel that doesn't work because Vercel
+functions can't run a continuous loop, so the bot switches to **webhook mode**:
+Telegram POSTs every incoming message to `https://<api-host>/api/telegram/webhook`,
+the function wakes up, processes the update, returns 200, sleeps.
+
+This is detected automatically — `TelegramService` checks `process.env.VERCEL`
+and skips polling when it's set. You still need to register the webhook URL
+with Telegram once after deploy.
+
+### 8.1 Generate a webhook secret
+
+Pick a random ~32-character string. PowerShell:
+
+```powershell
+-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | % { [char]$_ })
+```
+
+This becomes `TELEGRAM_WEBHOOK_SECRET`. Telegram echoes it back in the
+`X-Telegram-Bot-Api-Secret-Token` header on every webhook POST so the API
+can verify the request is genuine.
+
+### 8.2 Add env vars to the `crm-api` Vercel project
+
+```env
+TELEGRAM_BOT_TOKEN=<your bot token from @BotFather>
+TELEGRAM_BOT_USERNAME=<your bot username, no @ prefix>
+TELEGRAM_WEBHOOK_SECRET=<the random string from 8.1>
+TELEGRAM_WEBHOOK_URL=https://api.savdocrm.uz/api/telegram/webhook
+```
+
+(If you haven't moved to a custom domain yet, use
+`https://crm-api.vercel.app/api/telegram/webhook` instead.)
+
+Redeploy `crm-api` so the function picks up the new env.
+
+### 8.3 Register the webhook with Telegram
+
+Two options — pick whichever:
+
+**A. From the app** (requires you to be logged in as OWNER):
+
+```powershell
+$token = "<your JWT from /api/auth/login>"
+curl.exe -X POST https://api.savdocrm.uz/api/telegram/webhook/setup `
+  -H "Authorization: Bearer $token" `
+  -H "Content-Type: application/json" `
+  -d '{}'
+```
+
+(With the body empty `{}`, the controller reads the URL from `TELEGRAM_WEBHOOK_URL`.)
+
+**B. Direct to Telegram** (no auth needed, just the bot token):
+
+```powershell
+$BotToken = "<your bot token>"
+$WebhookUrl = "https://api.savdocrm.uz/api/telegram/webhook"
+$Secret = "<TELEGRAM_WEBHOOK_SECRET value>"
+curl.exe "https://api.telegram.org/bot$BotToken/setWebhook?url=$WebhookUrl&secret_token=$Secret&drop_pending_updates=true"
+```
+
+Either way you should see `{"ok":true,"result":true,"description":"Webhook was set"}`.
+
+### 8.4 Verify
+
+1. Open Telegram and DM your bot — try `/start`. The bot should reply
+   "Welcome to SavdoCRM…" within a couple of seconds.
+2. Log in to the web app, go to **/settings/profile**, click **Создать
+   ссылку** under "Уведомления в Telegram", open the link in Telegram, hit
+   **Start** — the bot greets you by name and your account is linked.
+3. Create a test order in the web app. Within a few seconds the owner Telegram
+   you just linked should receive a "🆕 Новый заказ #N" DM.
+
+### 8.5 Inspect / remove the webhook
+
+Check what Telegram currently has registered:
+
+```powershell
+curl.exe -H "Authorization: Bearer $token" https://api.savdocrm.uz/api/telegram/webhook/setup
+```
+
+Returns `{ url, pendingUpdateCount, lastErrorMessage }`. A non-empty
+`lastErrorMessage` means Telegram tried to POST and your API didn't 200
+within 60 seconds — usually a cold-start hiccup, often clears itself once
+the function warms up. If it keeps failing, check the `crm-api` function
+logs in Vercel.
+
+To switch the bot back to local polling (e.g. temporarily during a debug
+session), unregister the webhook:
+
+```powershell
+curl.exe -X DELETE -H "Authorization: Bearer $token" https://api.savdocrm.uz/api/telegram/webhook/setup
+```

@@ -124,7 +124,7 @@ export class OrdersService {
   }
 
   async create(storeId: string, userId: string | undefined, dto: CreateOrderDto) {
-    const created = await this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Resolve and validate products (same store, in stock, get default prices).
       const productIds = Array.from(new Set(dto.items.map((i) => i.productId)));
       const products = await tx.product.findMany({
@@ -197,12 +197,36 @@ export class OrdersService {
         include: ORDER_INCLUDE,
       });
 
-      // Deduct stock.
+      // Deduct stock + capture which products cross the low-stock threshold
+      // during this transaction (so owners only get notified on the transition,
+      // not every order while the product stays low).
+      const lowStockTransitions: {
+        productId: string;
+        name: string;
+        stock: number;
+        threshold: number;
+      }[] = [];
       for (const [productId, qty] of stockChanges) {
-        await tx.product.update({
+        const before = byId.get(productId)!;
+        const updated = await tx.product.update({
           where: { id: productId },
           data: { stock: { decrement: qty } },
+          select: { name: true, stock: true, lowStockThreshold: true },
         });
+        const wasAbove = before.stock > before.lowStockThreshold;
+        const nowAtOrBelow = updated.stock <= updated.lowStockThreshold;
+        if (
+          updated.lowStockThreshold > 0 &&
+          wasAbove &&
+          nowAtOrBelow
+        ) {
+          lowStockTransitions.push({
+            productId,
+            name: updated.name,
+            stock: updated.stock,
+            threshold: updated.lowStockThreshold,
+          });
+        }
       }
 
       await tx.activityLog.create({
@@ -216,10 +240,13 @@ export class OrdersService {
         },
       });
 
-      return created;
+      return { created, lowStockTransitions };
     });
-    this.telegram.notifyOrderStatus(created.id, 'CREATED');
-    return created;
+    this.telegram.notifyOrderStatus(result.created.id, 'CREATED');
+    if (result.lowStockTransitions.length > 0) {
+      this.telegram.notifyLowStock(storeId, result.lowStockTransitions);
+    }
+    return result.created;
   }
 
   async update(storeId: string, id: string, dto: UpdateOrderDto) {

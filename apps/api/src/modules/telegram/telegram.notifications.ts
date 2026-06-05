@@ -53,6 +53,13 @@ function format(template: string, ...args: string[]): string {
   return template.replace(/\{(\d+)\}/g, (_, i) => args[Number(i)] ?? '');
 }
 
+// Low-stock alert templates ({0} = product name, {1} = remaining stock,
+// {2} = threshold).
+const LOW_STOCK_TEMPLATES: Record<string, string> = {
+  ru: '⚠️ Заканчивается «{0}»: осталось {1} шт (порог {2}).',
+  uz: '⚠️ «{0}» tugab qolyapti: {1} ta qoldi (chegara {2}).',
+};
+
 @Injectable()
 export class TelegramNotificationsService {
   private readonly logger = new Logger(TelegramNotificationsService.name);
@@ -128,6 +135,58 @@ export class TelegramNotificationsService {
       customerLabel,
       order.total.toString(),
     );
+
+    await Promise.all(
+      owners.map((o) =>
+        o.telegramChatId ? this.telegram.sendMessage(o.telegramChatId, text) : Promise.resolve(false),
+      ),
+    );
+  }
+
+  /**
+   * Notify owners that products have just dropped to/below their low-stock
+   * threshold. `transitioned` lists products that crossed the threshold during
+   * the current operation (callers should compute this before/after stock
+   * deductions). Fire and forget.
+   */
+  notifyLowStock(
+    storeId: string,
+    transitioned: { productId: string; name: string; stock: number; threshold: number }[],
+  ): void {
+    if (!this.telegram.isEnabled() || transitioned.length === 0) return;
+    void this.sendLowStock(storeId, transitioned).catch((err) => {
+      this.logger.warn(`notifyLowStock(${storeId}) failed: ${(err as Error).message}`);
+    });
+  }
+
+  private async sendLowStock(
+    storeId: string,
+    transitioned: { productId: string; name: string; stock: number; threshold: number }[],
+  ): Promise<void> {
+    const store = await this.prisma.store.findUnique({
+      where: { id: storeId },
+      select: { locale: true },
+    });
+    if (!store) return;
+    const locale = LOW_STOCK_TEMPLATES[store.locale] ? store.locale : 'ru';
+    const template = LOW_STOCK_TEMPLATES[locale]!;
+
+    const owners = await this.prisma.user.findMany({
+      where: {
+        storeId,
+        role: Role.OWNER,
+        isActive: true,
+        telegramChatId: { not: null },
+      },
+      select: { telegramChatId: true },
+    });
+    if (owners.length === 0) return;
+
+    // One message per product so each row is independently readable.
+    const lines = transitioned.map((p) =>
+      format(template, p.name, String(p.stock), String(p.threshold)),
+    );
+    const text = lines.join('\n');
 
     await Promise.all(
       owners.map((o) =>
