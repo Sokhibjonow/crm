@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useCurrentUser } from '@/lib/current-user';
 import { formatMoney } from '@/lib/format';
 import {
   downloadOrdersExport,
@@ -30,6 +31,7 @@ export default function OrdersPage({ params: { locale } }: Props) {
   const t = useTranslations('orders');
   const tStatuses = useTranslations('orders.statusValues');
   const tExtra = useTranslations('ordersExtra');
+  const { can } = useCurrentUser();
 
   const [q, setQ] = useState('');
   const [queryQ, setQueryQ] = useState('');
@@ -100,12 +102,14 @@ export default function OrdersPage({ params: { locale } }: Props) {
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('title')}</h1>
-        <Link
-          href={`/${locale}/orders/new`}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800"
-        >
-          + {t('addNew')}
-        </Link>
+        {can('order.create') && (
+          <Link
+            href={`/${locale}/orders/new`}
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white dark:bg-slate-200 dark:text-slate-900 hover:bg-slate-800"
+          >
+            + {t('addNew')}
+          </Link>
+        )}
       </div>
 
       <div className="mt-6 flex flex-wrap items-end gap-3">

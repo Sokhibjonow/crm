@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { ApiError } from '@/lib/api';
+import { useCurrentUser } from '@/lib/current-user';
 import {
   deleteProduct,
   getProduct,
@@ -22,6 +23,7 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
   const t = useTranslations('products');
   const tCommon = useTranslations('common');
   const router = useRouter();
+  const { can } = useCurrentUser();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -86,7 +88,10 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('editTitle')}</h1>
         <div className="flex gap-2">
-          <StockAdjustButton product={product} onAdjusted={setProduct} />
+          {can('inventory.adjust') && (
+            <StockAdjustButton product={product} onAdjusted={setProduct} />
+          )}
+          {can('product.delete') && (
           <button
             type="button"
             onClick={handleDelete}
@@ -95,6 +100,7 @@ export default function EditProductPage({ params: { locale, id } }: Props) {
           >
             {t('delete')}
           </button>
+          )}
         </div>
       </div>
       {deleteError && <p className="mt-3 text-sm text-red-600">{deleteError}</p>}

@@ -3,7 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ApiError } from '@/lib/api';
+import { useCurrentUser } from '@/lib/current-user';
 import { changeOrderStatus, type Order, type OrderStatus } from '@/lib/orders';
+import type { Action } from '@/lib/permissions';
 
 const NEXT_STATUSES: Record<OrderStatus, OrderStatus[]> = {
   NEW: ['CONFIRMED', 'CANCELLED'],
@@ -14,6 +16,15 @@ const NEXT_STATUSES: Record<OrderStatus, OrderStatus[]> = {
   CANCELLED: [],
 };
 
+const ACTION_FOR_STATUS: Record<OrderStatus, Action | null> = {
+  NEW: null, // never a target of "go to"
+  CONFIRMED: 'order.confirm',
+  PACKING: 'order.pack',
+  SHIPPED: 'order.ship',
+  DELIVERED: 'order.deliver',
+  CANCELLED: 'order.cancel',
+};
+
 interface Props {
   order: Order;
   onUpdated: (o: Order) => void;
@@ -21,10 +32,14 @@ interface Props {
 
 export function StatusActions({ order, onUpdated }: Props) {
   const t = useTranslations('orders');
+  const { can } = useCurrentUser();
   const [pending, setPending] = useState<OrderStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const targets = NEXT_STATUSES[order.status];
+  const targets = NEXT_STATUSES[order.status].filter((s) => {
+    const action = ACTION_FOR_STATUS[s];
+    return action ? can(action) : true;
+  });
   if (targets.length === 0) return null;
 
   async function go(target: OrderStatus) {

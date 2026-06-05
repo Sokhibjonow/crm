@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
+import { useCurrentUser } from '@/lib/current-user';
 import { formatStock } from '@/lib/format';
 import { listProducts, type Product, type ProductListResult } from '@/lib/products';
 import { StockAdjustButton } from '../products/_components/stock-adjust-button';
@@ -16,6 +17,8 @@ interface Props {
 export default function InventoryPage({ params: { locale } }: Props) {
   const t = useTranslations('inventory');
   const tProducts = useTranslations('products');
+  const { can } = useCurrentUser();
+  const canAdjust = can('inventory.adjust');
 
   const [lowOnly, setLowOnly] = useState(true);
   const [page, setPage] = useState(1);
@@ -125,7 +128,9 @@ export default function InventoryPage({ params: { locale } }: Props) {
                     </td>
                     <td className="px-4 py-2 text-slate-700">{p.category ?? '—'}</td>
                     <td className="px-4 py-2 text-right">
-                      <StockAdjustButton product={p} onAdjusted={handleAdjusted} />
+                      {canAdjust && (
+                        <StockAdjustButton product={p} onAdjusted={handleAdjusted} />
+                      )}
                     </td>
                   </tr>
                 );

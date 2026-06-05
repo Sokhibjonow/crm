@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,10 +14,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { OrderStatus, Role } from '@savdo/db';
 import type { Response } from 'express';
 import { CurrentUser } from '../../common/auth/current-user.decorator';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import type { JwtPayload } from '../../common/auth/jwt-payload.type';
+import { Roles } from '../../common/auth/roles.decorator';
+import { RolesGuard } from '../../common/auth/roles.guard';
 import { AddItemDto } from './dto/add-item.dto';
 import { AddPaymentDto } from './dto/add-payment.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -26,21 +30,33 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 import { OrdersExportService } from './orders.export';
 import { OrdersService } from './orders.service';
 
+// Which role can move an order INTO each status.
+const STATUS_TRANSITION_ROLES: Record<OrderStatus, Role[]> = {
+  [OrderStatus.NEW]: [], // never a target
+  [OrderStatus.CONFIRMED]: [Role.OWNER, Role.MANAGER, Role.CASHIER],
+  [OrderStatus.PACKING]: [Role.OWNER, Role.MANAGER, Role.WAREHOUSE],
+  [OrderStatus.SHIPPED]: [Role.OWNER, Role.MANAGER, Role.WAREHOUSE, Role.COURIER],
+  [OrderStatus.DELIVERED]: [Role.OWNER, Role.MANAGER, Role.COURIER],
+  [OrderStatus.CANCELLED]: [Role.OWNER, Role.MANAGER],
+};
+
 @Controller('orders')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class OrdersController {
   constructor(
     private readonly orders: OrdersService,
     private readonly exportService: OrdersExportService,
   ) {}
 
+  // Reads: every authenticated role sees orders.
   @Get()
   list(@CurrentUser() user: JwtPayload, @Query() query: ListOrdersDto) {
     return this.orders.list(user.storeId, query);
   }
 
-  // IMPORTANT: declared before ':id' so the literal route matches first.
+  // Export only for the people who manage the business side.
   @Get('export')
+  @Roles(Role.OWNER, Role.MANAGER)
   async export(
     @CurrentUser() user: JwtPayload,
     @Query() query: ListOrdersDto,
@@ -72,11 +88,13 @@ export class OrdersController {
   }
 
   @Post()
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER)
   create(@CurrentUser() user: JwtPayload, @Body() dto: CreateOrderDto) {
     return this.orders.create(user.storeId, user.userId, dto);
   }
 
   @Patch(':id')
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER)
   update(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
@@ -86,6 +104,7 @@ export class OrdersController {
   }
 
   @Post(':id/items')
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER)
   addItem(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
@@ -95,6 +114,7 @@ export class OrdersController {
   }
 
   @Delete(':id/items/:itemId')
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER)
   @HttpCode(HttpStatus.OK)
   removeItem(
     @CurrentUser() user: JwtPayload,
@@ -104,16 +124,26 @@ export class OrdersController {
     return this.orders.removeItem(user.storeId, id, itemId);
   }
 
+  // Status: allow the endpoint to anyone with an order role, but check the
+  // specific transition against role here so e.g. a COURIER can't confirm
+  // an order even by hitting the API directly.
   @Post(':id/status')
   updateStatus(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() dto: UpdateStatusDto,
   ) {
+    const allowed = STATUS_TRANSITION_ROLES[dto.status] ?? [];
+    if (!allowed.includes(user.role)) {
+      throw new ForbiddenException(
+        `Role ${user.role} cannot move an order to ${dto.status}`,
+      );
+    }
     return this.orders.updateStatus(user.storeId, id, user.userId, dto.status);
   }
 
   @Post(':id/payments')
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER, Role.COURIER)
   addPayment(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,

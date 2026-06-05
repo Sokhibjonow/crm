@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { LangSwitcher } from '@/components/lang-switcher';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import { useCurrentUser } from '@/lib/current-user';
+import { navItemsFor } from '@/lib/permissions';
 import { LogoutButton } from './logout-button';
 import { UserBadge } from './user-badge';
 
@@ -23,6 +25,7 @@ export function AppShell({ locale, children }: Props) {
   const tCommon = useTranslations('common');
   const tNav = useTranslations('nav');
   const pathname = usePathname();
+  const { user } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Close the drawer on route change.
@@ -42,16 +45,18 @@ export function AppShell({ locale, children }: Props) {
     };
   }, [drawerOpen]);
 
-  const items: NavItem[] = [
-    { href: `/${locale}/dashboard`, label: tNav('dashboard') },
-    { href: `/${locale}/customers`, label: tNav('customers') },
-    { href: `/${locale}/orders`, label: tNav('orders') },
-    { href: `/${locale}/products`, label: tNav('products') },
-    { href: `/${locale}/inventory`, label: tNav('inventory') },
-    { href: `/${locale}/reports`, label: tNav('reports') },
-    { href: `/${locale}/team`, label: tNav('team') },
-    { href: `/${locale}/settings`, label: tNav('settings') },
-  ];
+  const allowed = navItemsFor(user?.role);
+  const allItems: Record<(typeof allowed)[number], NavItem> = {
+    dashboard: { href: `/${locale}/dashboard`, label: tNav('dashboard') },
+    customers: { href: `/${locale}/customers`, label: tNav('customers') },
+    orders: { href: `/${locale}/orders`, label: tNav('orders') },
+    products: { href: `/${locale}/products`, label: tNav('products') },
+    inventory: { href: `/${locale}/inventory`, label: tNav('inventory') },
+    reports: { href: `/${locale}/reports`, label: tNav('reports') },
+    team: { href: `/${locale}/team`, label: tNav('team') },
+    settings: { href: `/${locale}/settings`, label: tNav('settings') },
+  };
+  const items: NavItem[] = allowed.map((k) => allItems[k]);
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">

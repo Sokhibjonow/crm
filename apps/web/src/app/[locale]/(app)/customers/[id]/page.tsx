@@ -10,6 +10,7 @@ import {
   getCustomer,
   updateCustomer,
 } from '@/lib/customers';
+import { useCurrentUser } from '@/lib/current-user';
 import { CustomerForm } from '../_components/customer-form';
 import { TelegramSection } from './_components/telegram-section';
 
@@ -21,6 +22,7 @@ export default function EditCustomerPage({ params: { locale, id } }: Props) {
   const t = useTranslations('customers');
   const tCommon = useTranslations('common');
   const router = useRouter();
+  const { can } = useCurrentUser();
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -77,14 +79,16 @@ export default function EditCustomerPage({ params: { locale, id } }: Props) {
     <main className="mx-auto max-w-4xl px-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('editTitle')}</h1>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={deleting}
-          className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40 disabled:opacity-60"
-        >
-          {t('delete')}
-        </button>
+        {can('customer.delete') && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40 disabled:opacity-60"
+          >
+            {t('delete')}
+          </button>
+        )}
       </div>
       <div className="mt-6">
         <CustomerForm

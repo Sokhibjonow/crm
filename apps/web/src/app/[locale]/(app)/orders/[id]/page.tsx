@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { useCurrentUser } from '@/lib/current-user';
 import { formatMoney } from '@/lib/format';
 import { getOrder, removeOrderItem, type Order } from '@/lib/orders';
 import { AddPaymentForm } from '../_components/add-payment-form';
@@ -15,6 +16,7 @@ interface Props {
 export default function OrderDetailPage({ params: { locale, id } }: Props) {
   const t = useTranslations('orders');
   const tMethods = useTranslations('orders.methodValues');
+  const { can } = useCurrentUser();
   const [order, setOrder] = useState<Order | null>(null);
   const [loadError, setLoadError] = useState(false);
 
@@ -59,7 +61,8 @@ export default function OrderDetailPage({ params: { locale, id } }: Props) {
   }
 
   const remaining = Number(order.total) - Number(order.paidAmount);
-  const editable = order.status === 'NEW';
+  const editable = order.status === 'NEW' && can('order.edit');
+  const canAddPayment = can('order.payment.add');
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
@@ -171,7 +174,7 @@ export default function OrderDetailPage({ params: { locale, id } }: Props) {
         </section>
       )}
 
-      {order.status !== 'CANCELLED' && (
+      {order.status !== 'CANCELLED' && canAddPayment && (
         <section className="mt-8">
           <AddPaymentForm order={order} onAdded={setOrder} />
         </section>
