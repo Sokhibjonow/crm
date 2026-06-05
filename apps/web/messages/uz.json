@@ -55,7 +55,22 @@
     "reports": "Hisobotlar",
     "team": "Xodimlar",
     "activity": "Faollik",
+    "sale": "Sotuv",
     "settings": "Sozlamalar"
+  },
+  "sale": {
+    "title": "Tezkor sotuv",
+    "hint": "Skaner mahsulotni darhol savatga qo'shadi",
+    "scanLabel": "Skaner / shtrix-kod",
+    "scanPlaceholder": "Kodni skanerlang yoki yozing va Enter bosing",
+    "emptyCart": "Savat bo'sh — mahsulotni skanerlang",
+    "checkout": "To'lash va yakunlash",
+    "clearCart": "Savatni tozalash",
+    "saleCompleted": "Buyurtma #{number} rasmiylashtirildi",
+    "errorBarcodeNotFound": "«{code}» mahsuloti topilmadi",
+    "errorOutOfStock": "Qoldiq yetmaydi: {name}",
+    "errorPromoNoItems": "Avval mahsulot qo'shing",
+    "promoApplied": "Promokod qo'llandi"
   },
   "dashboard": {
     "title": "Bosh sahifa",

@@ -55,7 +55,22 @@
     "reports": "Отчёты",
     "team": "Сотрудники",
     "activity": "Активность",
+    "sale": "Продажа",
     "settings": "Настройки"
+  },
+  "sale": {
+    "title": "Быстрая продажа",
+    "hint": "Сканер сразу добавляет товар в корзину",
+    "scanLabel": "Сканер / штрих-код",
+    "scanPlaceholder": "Отсканируйте или введите код и нажмите Enter",
+    "emptyCart": "Корзина пуста — отсканируйте товар",
+    "checkout": "Оплатить и завершить",
+    "clearCart": "Очистить корзину",
+    "saleCompleted": "Заказ #{number} оформлен",
+    "errorBarcodeNotFound": "Товар «{code}» не найден",
+    "errorOutOfStock": "Недостаточно остатка: {name}",
+    "errorPromoNoItems": "Сначала добавьте товары",
+    "promoApplied": "Промокод применён"
   },
   "dashboard": {
     "title": "Главная",

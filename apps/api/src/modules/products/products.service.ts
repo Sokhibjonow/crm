@@ -79,6 +79,23 @@ export class ProductsService {
    * Distinct tags used by products in this store, alphabetised. Powers the
    * tag-chip filter on the products page.
    */
+  /**
+   * Quick-sale (POS) lookup. Returns a single product by exact barcode OR SKU
+   * within the store, or null if nothing matched. Used by /sale to turn a
+   * scanner read into a cart line in one round-trip.
+   */
+  async findByBarcode(storeId: string, raw: string) {
+    const code = raw.trim();
+    if (!code) return null;
+    return this.prisma.product.findFirst({
+      where: {
+        storeId,
+        isActive: true,
+        OR: [{ barcode: code }, { sku: code }],
+      },
+    });
+  }
+
   async tags(storeId: string): Promise<string[]> {
     const rows = await this.prisma.product.findMany({
       where: { storeId },

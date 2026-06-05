@@ -76,6 +76,10 @@ export function listProductTags(): Promise<string[]> {
   return apiRequest<string[]>('/products/tags');
 }
 
+export function lookupProductByBarcode(code: string): Promise<Product> {
+  return apiRequest<Product>(`/products/lookup/by-barcode/${encodeURIComponent(code)}`);
+}
+
 export function getProduct(id: string): Promise<Product> {
   return apiRequest<Product>(`/products/${id}`);
 }

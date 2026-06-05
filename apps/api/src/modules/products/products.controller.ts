@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -45,6 +46,22 @@ export class ProductsController {
   @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER, Role.WAREHOUSE)
   tags(@CurrentUser() user: JwtPayload) {
     return this.products.tags(user.storeId);
+  }
+
+  // Quick-sale lookup. Returns 404 if no exact match — distinguishes "not
+  // found" from "found nothing matching the search prefix" on the client.
+  @Get('lookup/by-barcode/:code')
+  @Roles(Role.OWNER, Role.MANAGER, Role.CASHIER, Role.WAREHOUSE)
+  async lookupByBarcode(
+    @CurrentUser() user: JwtPayload,
+    @Param('code') code: string,
+  ) {
+    const product = await this.products.findByBarcode(user.storeId, code);
+    if (!product) {
+      // Throw NotFound so the client can show a "not found" toast.
+      throw new NotFoundException('Product not found');
+    }
+    return product;
   }
 
   @Get(':id')

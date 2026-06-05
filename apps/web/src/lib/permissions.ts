@@ -19,6 +19,7 @@ export type Action =
   // Orders
   | 'order.view'
   | 'order.create'
+  | 'sale.pos' // /sale quick-sale screen
   | 'order.edit'
   | 'order.cancel'
   | 'order.confirm' // NEW -> CONFIRMED
@@ -52,6 +53,7 @@ const MATRIX: Record<UserRole, Action[]> = {
     'inventory.adjust',
     'order.view',
     'order.create',
+    'sale.pos',
     'order.edit',
     'order.cancel',
     'order.confirm',
@@ -80,6 +82,7 @@ const MATRIX: Record<UserRole, Action[]> = {
     'inventory.adjust',
     'order.view',
     'order.create',
+    'sale.pos',
     'order.edit',
     'order.cancel',
     'order.confirm',
@@ -99,6 +102,7 @@ const MATRIX: Record<UserRole, Action[]> = {
     'product.view',
     'order.view',
     'order.create',
+    'sale.pos',
     'order.edit',
     'order.confirm',
     'order.payment.add',
@@ -130,6 +134,7 @@ export function can(role: UserRole | undefined, action: Action): boolean {
 /** Top-level nav sections the role is allowed to open. */
 export function navItemsFor(role: UserRole | undefined): Array<
   | 'dashboard'
+  | 'sale'
   | 'customers'
   | 'orders'
   | 'products'
@@ -140,6 +145,8 @@ export function navItemsFor(role: UserRole | undefined): Array<
   | 'settings'
 > {
   const items: ReturnType<typeof navItemsFor> = ['dashboard'];
+  // POS / quick-sale comes right after dashboard — cashier's primary surface.
+  if (can(role, 'sale.pos')) items.push('sale');
   if (can(role, 'customer.view')) items.push('customers');
   if (can(role, 'order.view')) items.push('orders');
   if (can(role, 'product.view')) items.push('products');

@@ -49,6 +49,7 @@ export function AppShell({ locale, children }: Props) {
   const allowed = navItemsFor(user?.role);
   const allItems: Record<(typeof allowed)[number], NavItem> = {
     dashboard: { href: `/${locale}/dashboard`, label: tNav('dashboard') },
+    sale: { href: `/${locale}/sale`, label: tNav('sale') },
     customers: { href: `/${locale}/customers`, label: tNav('customers') },
     orders: { href: `/${locale}/orders`, label: tNav('orders') },
     products: { href: `/${locale}/products`, label: tNav('products') },
