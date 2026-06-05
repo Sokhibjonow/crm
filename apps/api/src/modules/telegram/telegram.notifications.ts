@@ -15,6 +15,7 @@ const CUSTOMER_TEMPLATES: LocalizedTemplates = {
     SHIPPED: '🚚 Заказ #{0} от «{1}» отправлен.',
     DELIVERED: '🎉 Заказ #{0} от «{1}» доставлен. Спасибо за покупку!',
     CANCELLED: '❌ Заказ #{0} от «{1}» отменён.',
+    RETURNED: '↩️ Заказ #{0} от «{1}» оформлен возврат.',
   },
   uz: {
     CREATED: '🆕 «{1}» do\'konidan #{0} buyurtma qabul qilindi. Summa: {2}.',
@@ -24,6 +25,7 @@ const CUSTOMER_TEMPLATES: LocalizedTemplates = {
     SHIPPED: '🚚 «{1}» do\'konidan #{0} buyurtma jo\'natildi.',
     DELIVERED: '🎉 «{1}» do\'konidan #{0} buyurtma yetkazildi. Xaridingiz uchun rahmat!',
     CANCELLED: '❌ «{1}» do\'konidan #{0} buyurtma bekor qilindi.',
+    RETURNED: '↩️ «{1}» do\'konidan #{0} buyurtma qaytarildi.',
   },
 };
 
@@ -37,6 +39,7 @@ const OWNER_TEMPLATES: LocalizedTemplates = {
     SHIPPED: '🚚 Заказ #{0} отправлен ({1}).',
     DELIVERED: '🎉 Заказ #{0} доставлен ({1}). Сумма: {2}.',
     CANCELLED: '❌ Заказ #{0} отменён ({1}).',
+    RETURNED: '↩️ Возврат по заказу #{0} ({1}). Сумма: {2}.',
   },
   uz: {
     CREATED: '🆕 Yangi buyurtma #{0}\nMijoz: {1}\nSumma: {2}',
@@ -46,6 +49,7 @@ const OWNER_TEMPLATES: LocalizedTemplates = {
     SHIPPED: '🚚 #{0} buyurtma jo\'natildi ({1}).',
     DELIVERED: '🎉 #{0} buyurtma yetkazildi ({1}). Summa: {2}.',
     CANCELLED: '❌ #{0} buyurtma bekor qilindi ({1}).',
+    RETURNED: '↩️ #{0} buyurtma qaytarildi ({1}). Summa: {2}.',
   },
 };
 

@@ -12,8 +12,11 @@ const NEXT_STATUSES: Record<OrderStatus, OrderStatus[]> = {
   CONFIRMED: ['PACKING', 'CANCELLED'],
   PACKING: ['SHIPPED', 'CANCELLED'],
   SHIPPED: ['DELIVERED', 'CANCELLED'],
-  DELIVERED: [],
+  // A delivered order can still be returned. Mirrors the backend's
+  // ALLOWED_TRANSITIONS table in apps/api/src/modules/orders/orders.service.ts.
+  DELIVERED: ['RETURNED'],
   CANCELLED: [],
+  RETURNED: [],
 };
 
 const ACTION_FOR_STATUS: Record<OrderStatus, Action | null> = {
@@ -23,6 +26,7 @@ const ACTION_FOR_STATUS: Record<OrderStatus, Action | null> = {
   SHIPPED: 'order.ship',
   DELIVERED: 'order.deliver',
   CANCELLED: 'order.cancel',
+  RETURNED: 'order.return',
 };
 
 interface Props {
@@ -58,7 +62,7 @@ export function StatusActions({ order, onUpdated }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {targets.map((s) => {
-        const danger = s === 'CANCELLED';
+        const danger = s === 'CANCELLED' || s === 'RETURNED';
         return (
           <button
             key={s}

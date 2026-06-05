@@ -38,6 +38,8 @@ const STATUS_TRANSITION_ROLES: Record<OrderStatus, Role[]> = {
   [OrderStatus.SHIPPED]: [Role.OWNER, Role.MANAGER, Role.WAREHOUSE, Role.COURIER],
   [OrderStatus.DELIVERED]: [Role.OWNER, Role.MANAGER, Role.COURIER],
   [OrderStatus.CANCELLED]: [Role.OWNER, Role.MANAGER],
+  // Returns are a finance/owner decision — same gating as cancellation.
+  [OrderStatus.RETURNED]: [Role.OWNER, Role.MANAGER],
 };
 
 @Controller('orders')

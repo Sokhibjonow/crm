@@ -25,6 +25,7 @@ export type Action =
   | 'order.pack' // CONFIRMED -> PACKING
   | 'order.ship' // PACKING -> SHIPPED
   | 'order.deliver' // SHIPPED -> DELIVERED
+  | 'order.return' // DELIVERED -> RETURNED
   | 'order.payment.add'
   // Reports
   | 'report.view'
@@ -57,6 +58,7 @@ const MATRIX: Record<UserRole, Action[]> = {
     'order.pack',
     'order.ship',
     'order.deliver',
+    'order.return',
     'order.payment.add',
     'report.view',
     'activity.view',
@@ -84,6 +86,7 @@ const MATRIX: Record<UserRole, Action[]> = {
     'order.pack',
     'order.ship',
     'order.deliver',
+    'order.return',
     'order.payment.add',
     'report.view',
     'activity.view',

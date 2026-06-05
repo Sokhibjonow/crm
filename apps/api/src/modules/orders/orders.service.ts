@@ -26,8 +26,11 @@ const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.CONFIRMED]: [OrderStatus.PACKING, OrderStatus.CANCELLED],
   [OrderStatus.PACKING]: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
   [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
-  [OrderStatus.DELIVERED]: [],
+  // A delivered order can still be returned (within a return window — we
+  // don't enforce a deadline yet, just rely on owner judgement).
+  [OrderStatus.DELIVERED]: [OrderStatus.RETURNED],
   [OrderStatus.CANCELLED]: [],
+  [OrderStatus.RETURNED]: [],
 };
 
 const ORDER_INCLUDE = {
@@ -359,8 +362,10 @@ export class OrdersService {
         );
       }
 
-      // If cancelling, restore stock for all items.
-      if (next === OrderStatus.CANCELLED) {
+      // If cancelling or returning, restore stock for all items. Cancellation
+      // reverses a never-delivered order; a return reverses a delivered one.
+      // Either way the goods come back to the warehouse.
+      if (next === OrderStatus.CANCELLED || next === OrderStatus.RETURNED) {
         for (const it of order.items) {
           await tx.product.update({
             where: { id: it.productId },

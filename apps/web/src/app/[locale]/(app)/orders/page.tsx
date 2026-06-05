@@ -22,6 +22,7 @@ const STATUSES: OrderStatus[] = [
   'SHIPPED',
   'DELIVERED',
   'CANCELLED',
+  'RETURNED',
 ];
 
 interface Props {

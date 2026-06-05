@@ -175,7 +175,8 @@
       "PACKING": "Qadoqlash",
       "SHIPPED": "Jo'natildi",
       "DELIVERED": "Yetkazildi",
-      "CANCELLED": "Bekor qilindi"
+      "CANCELLED": "Bekor qilindi",
+      "RETURNED": "Qaytarildi"
     },
     "paymentStatusValues": {
       "UNPAID": "To'lanmagan",
@@ -196,7 +197,8 @@
       "PACKING": "Qadoqlashga",
       "SHIPPED": "Jo'natish",
       "DELIVERED": "Yetkazildi",
-      "CANCELLED": "Bekor qilish"
+      "CANCELLED": "Bekor qilish",
+      "RETURNED": "Qaytarishni rasmiylashtirish"
     }
   },
   "products": {
