@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 import { ApiError } from '@/lib/api';
 import type { CustomerInput } from '@/lib/customers';
 
@@ -23,6 +24,7 @@ function stringToTags(value: string): string[] {
 }
 
 export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
+  const tCommon = useTranslations('common');
   const tCustomers = useTranslations('customers');
   const tAuth = useTranslations('auth');
 
@@ -46,6 +48,7 @@ export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
         notes: notes.trim() || undefined,
         tags: stringToTags(tagsInput),
       });
+      toast.success(initial ? tCommon('saved') : tCommon('created'));
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setError(tCustomers('errorPhoneTaken'));

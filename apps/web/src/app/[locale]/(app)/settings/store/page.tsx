@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { type AuthUser, getCurrentUser } from '@/lib/auth';
 import { getStore, type Store, type StoreLocale, updateStore } from '@/lib/stores';
 
@@ -43,6 +44,7 @@ export default function StoreSettingsPage() {
       const updated = await updateStore({ name: name.trim(), locale });
       setStore(updated);
       setSaved(true);
+      toast.success(t('saved'));
     } catch {
       setError(tAuth('errorGeneric'));
     } finally {

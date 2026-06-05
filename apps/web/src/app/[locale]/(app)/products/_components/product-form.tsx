@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 import { ApiError } from '@/lib/api';
 import type { ProductInput } from '@/lib/products';
 
@@ -20,6 +21,7 @@ function num(value: string): number | undefined {
 export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
   const t = useTranslations('products');
   const tAuth = useTranslations('auth');
+  const tCommon = useTranslations('common');
 
   const [name, setName] = useState(initial?.name ?? '');
   const [sku, setSku] = useState(initial?.sku ?? '');
@@ -55,6 +57,7 @@ export function ProductForm({ initial, submitLabel, onSubmit }: Props) {
         supplier: supplier.trim() || undefined,
         isActive,
       });
+      toast.success(initial ? tCommon('saved') : tCommon('created'));
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setError(t('errorSkuTaken'));

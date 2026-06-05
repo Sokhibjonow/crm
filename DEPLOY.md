@@ -142,6 +142,10 @@ Click **Save**, then **Deployments → ⋯ → Redeploy** the latest deployment 
 ## Things that are easy to forget
 
 - **Schema changes need a migration step.** Edit `packages/db/prisma/schema.prisma` → run `npm -w @savdo/db run migrate:dev -- --name <whatever>` locally (against the Neon direct URL) → commit the migration files → push. Vercel doesn't run migrations.
+  - If your network blocks outbound 5432 (some ISPs/firewalls do — Prisma will report `P1001: Can't reach database server`), use the HTTP fallback:
+    1. Write the migration SQL by hand at `packages/db/prisma/migrations/<timestamp>_<name>/migration.sql` (matches the format Prisma generates).
+    2. `npm install --no-save @neondatabase/serverless`
+    3. `DIRECT_URL="<neon direct url>" node scripts/apply-migration.mjs <timestamp>_<name>` — runs over HTTPS (port 443) via Neon's serverless driver, then records the migration in `_prisma_migrations` so future `prisma migrate deploy` runs stay in sync.
 - **Cold starts are real.** The first request after a few minutes of idle takes 1–3 seconds. Subsequent requests are fast. If this matters, switch the API to a long-running host later (Railway / Fly / a VPS).
 - **The Telegram bot is intentionally off on Vercel.** `process.env.VERCEL` is detected in `TelegramService.onModuleInit` and polling is skipped. To turn it back on, refactor to webhook mode (Telegram POSTs to `/api/telegram/webhook/<secret>`) — that fits Vercel's model.
 - **Two projects, one repo.** Pushing to `main` triggers builds in both `crm-web` and `crm-api` automatically. Each project's deploy status is independent.
@@ -155,4 +159,99 @@ Once everything is wired:
 
 - Pushing to `main` → both `crm-web` and `crm-api` rebuild and redeploy.
 - Schema changes need a `migrate:dev` run locally first, then push.
-- No CI is set up; verification is manual. A first CI step worth adding: GitHub Actions running `npm run typecheck` on PR.
+- CI: `.github/workflows/ci.yml` typechecks both apps on every push/PR.
+
+---
+
+## 7. Custom domain (`app.savdocrm.uz`)
+
+Replace the long `.vercel.app` URLs with your own domain. You need one domain
+that you control (e.g. `savdocrm.uz`); add subdomains for the web and the API.
+
+### 7.1 Register / point a domain
+
+If you don't already own `savdocrm.uz` (or whatever brand domain you settle on),
+register it with any registrar (Namecheap, GoDaddy, Porkbun, **uz.net** for `.uz`).
+DNS doesn't need to live with the registrar — most tutorials below assume you
+add `CNAME` records wherever your DNS is hosted (Cloudflare, the registrar's
+own DNS panel, etc.).
+
+The plan below uses two subdomains:
+
+- `app.savdocrm.uz` → web app (Next.js)
+- `api.savdocrm.uz` → API (NestJS)
+
+You can also serve both behind a single domain if you prefer — pick whichever
+makes more sense to you.
+
+### 7.2 Add the web domain
+
+1. Vercel → **`crm-web` project** → **Settings → Domains** → **Add Domain**.
+2. Enter `app.savdocrm.uz` → **Add**.
+3. Vercel shows a DNS record to add — typically:
+   `CNAME app → cname.vercel-dns.com`
+4. Add that record at your DNS provider. Propagation usually completes in a few
+   minutes; Vercel rechecks automatically and issues a free Let's Encrypt
+   certificate once the record is live.
+5. Once Vercel marks the domain as **Valid Configuration**, the web app is
+   reachable at `https://app.savdocrm.uz`.
+
+### 7.3 Add the API domain
+
+1. Vercel → **`crm-api` project** → **Settings → Domains** → **Add Domain**
+   → `api.savdocrm.uz`.
+2. Add the matching `CNAME api → cname.vercel-dns.com` at your DNS provider.
+3. Wait for Vercel to validate + issue the cert.
+
+### 7.4 Update environment variables
+
+**Two env vars need to change.** Both updates require redeploying the project
+that owns the var.
+
+**`crm-web` project** — `NEXT_PUBLIC_API_URL`:
+
+```env
+NEXT_PUBLIC_API_URL=https://api.savdocrm.uz
+```
+
+**`crm-api` project** — `WEB_ORIGIN` (comma-separated, keep the old Vercel URL
+during the cutover so existing sessions don't break):
+
+```env
+WEB_ORIGIN=https://app.savdocrm.uz,https://crm-web.vercel.app
+```
+
+For each project: **Deployments → ⋯ → Redeploy** the latest deployment so it
+picks up the new env. (Vercel does not auto-restart on env changes.)
+
+### 7.5 Verify
+
+1. `https://api.savdocrm.uz/api/health` → `{ "status": "ok", "db": "up" }`
+2. `https://app.savdocrm.uz` → redirects to `/uz` (or `/ru`)
+3. Log in and create a record — check the browser **Network** tab; calls go
+   to `https://app.savdocrm.uz/api/*` (the Next.js route-handler proxy) and
+   are forwarded server-side to `https://api.savdocrm.uz/api/*`. No CORS in
+   the browser.
+
+### 7.6 (Optional) Drop the old Vercel URLs from CORS
+
+Once you've confirmed everything works under the custom domain for a few days,
+trim `WEB_ORIGIN` down to just your domains:
+
+```env
+WEB_ORIGIN=https://app.savdocrm.uz
+```
+
+Redeploy `crm-api`. Existing browser sessions hit the new domain via the
+new `NEXT_PUBLIC_API_URL`, so this is safe.
+
+### 7.7 Apex domain (`savdocrm.uz` without `app.`)
+
+If you also want the bare domain to redirect to the app:
+
+1. `crm-web` → Settings → Domains → Add `savdocrm.uz`.
+2. Add the DNS record Vercel asks for (usually an `A` record pointing to
+   `76.76.21.21`, or a `CNAME` for `www`).
+3. Vercel will treat one of the two as primary and 301 the other to it.
+   Pick whichever feels right (most SaaS apps keep `app.` as the canonical
+   product URL and leave the apex for a marketing site).

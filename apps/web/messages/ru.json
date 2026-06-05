@@ -8,7 +8,10 @@
     "email": "Email",
     "password": "Пароль",
     "save": "Сохранить",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "saved": "Сохранено",
+    "deleted": "Удалено",
+    "created": "Создано"
   },
   "nav": {
     "dashboard": "Главная",
@@ -264,7 +267,18 @@
     "currentPassword": "Текущий пароль",
     "newPassword": "Новый пароль",
     "passwordChanged": "Пароль изменён ✓",
-    "errorWrongPassword": "Текущий пароль неверный"
+    "errorWrongPassword": "Текущий пароль неверный",
+    "telegramTitle": "Уведомления в Telegram",
+    "telegramDesc": "Получайте сообщение о каждом новом заказе прямо в Telegram.",
+    "telegramConnected": "✓ Telegram подключён",
+    "telegramNotConfigured": "Telegram-бот не настроен на сервере.",
+    "telegramLinkHint": "Откройте ссылку в Telegram и нажмите Start — бот привяжет ваш чат.",
+    "telegramGenerateLink": "Создать ссылку",
+    "telegramRegenerateLink": "Новая ссылка",
+    "telegramDisconnect": "Отключить",
+    "telegramCopy": "Копировать",
+    "telegramCopied": "Скопировано ✓",
+    "telegramOpen": "Открыть в Telegram"
   },
   "ordersExtra": {
     "dateFrom": "С даты",

@@ -67,3 +67,22 @@ export async function updateProfile(input: UpdateProfileInput): Promise<AuthUser
 export async function changePassword(input: ChangePasswordInput): Promise<void> {
   return apiRequest<void>('/auth/change-password', { method: 'POST', body: input });
 }
+
+export interface MyTelegramLink {
+  connected: boolean;
+  code: string | null;
+  url: string | null;
+  botUsername: string | null;
+}
+
+export async function getMyTelegramLink(): Promise<MyTelegramLink> {
+  return apiRequest<MyTelegramLink>('/auth/me/telegram-link');
+}
+
+export async function regenerateMyTelegramLink(): Promise<MyTelegramLink> {
+  return apiRequest<MyTelegramLink>('/auth/me/telegram-link', { method: 'POST' });
+}
+
+export async function disconnectMyTelegram(): Promise<void> {
+  return apiRequest<void>('/auth/me/telegram-link', { method: 'DELETE' });
+}

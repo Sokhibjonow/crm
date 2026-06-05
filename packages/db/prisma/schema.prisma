@@ -93,16 +93,18 @@ model Store {
 // =========================================================================
 
 model User {
-  id           String   @id @default(cuid())
-  storeId      String
-  name         String
-  email        String
-  phone        String?
-  passwordHash String
-  role         Role     @default(OWNER)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String   @id @default(cuid())
+  storeId          String
+  name             String
+  email            String
+  phone            String?
+  passwordHash     String
+  role             Role     @default(OWNER)
+  isActive         Boolean  @default(true)
+  telegramChatId   String?  // populated when staff/owner DMs the bot via their link
+  telegramLinkCode String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   store        Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
   activityLogs ActivityLog[]

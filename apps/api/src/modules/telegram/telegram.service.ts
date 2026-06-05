@@ -4,6 +4,7 @@ import { Bot } from 'grammy';
 import { PrismaService } from '../../prisma/prisma.service';
 
 const START_PAYLOAD_PREFIX_CUSTOMER = 'c_';
+const START_PAYLOAD_PREFIX_OWNER = 'o_';
 
 @Injectable()
 export class TelegramService implements OnModuleInit, OnModuleDestroy {
@@ -66,6 +67,28 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
+      if (payload.startsWith(START_PAYLOAD_PREFIX_OWNER)) {
+        const code = payload.slice(START_PAYLOAD_PREFIX_OWNER.length);
+        const owner = await this.prisma.user.findUnique({
+          where: { telegramLinkCode: code },
+          include: { store: { select: { locale: true, name: true } } },
+        });
+        if (!owner) {
+          await ctx.reply('❌ Invalid or expired link.');
+          return;
+        }
+        await this.prisma.user.update({
+          where: { id: owner.id },
+          data: {
+            telegramChatId: String(chatId),
+            telegramLinkCode: null,
+          },
+        });
+        const greeting = greetOwnerLinked(owner.store.locale, owner.name, owner.store.name);
+        await ctx.reply(greeting);
+        return;
+      }
+
       await ctx.reply('❌ Invalid or expired link.');
     });
 
@@ -114,4 +137,11 @@ function greetLinked(locale: string, customerName: string, storeName: string): s
     return `✓ Salom, ${customerName}! Endi siz "${storeName}" do'konidan buyurtmangiz holati haqida xabar olasiz.`;
   }
   return `✓ Здравствуйте, ${customerName}! Теперь вы будете получать уведомления о статусе ваших заказов от магазина «${storeName}».`;
+}
+
+function greetOwnerLinked(locale: string, name: string, storeName: string): string {
+  if (locale === 'uz') {
+    return `✓ Salom, ${name}! "${storeName}" do'koningiz uchun yangi buyurtmalar haqida xabarnomalar shu yerga keladi.`;
+  }
+  return `✓ Здравствуйте, ${name}! Уведомления о новых заказах магазина «${storeName}» теперь будут приходить сюда.`;
 }

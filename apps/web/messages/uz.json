@@ -8,7 +8,10 @@
     "email": "Email",
     "password": "Parol",
     "save": "Saqlash",
-    "cancel": "Bekor qilish"
+    "cancel": "Bekor qilish",
+    "saved": "Saqlandi",
+    "deleted": "O'chirildi",
+    "created": "Yaratildi"
   },
   "nav": {
     "dashboard": "Bosh sahifa",
@@ -264,7 +267,18 @@
     "currentPassword": "Joriy parol",
     "newPassword": "Yangi parol",
     "passwordChanged": "Parol o'zgartirildi ✓",
-    "errorWrongPassword": "Joriy parol noto'g'ri"
+    "errorWrongPassword": "Joriy parol noto'g'ri",
+    "telegramTitle": "Telegram bildirishnomalari",
+    "telegramDesc": "Har bir yangi buyurtma haqida to'g'ridan-to'g'ri Telegram'ga xabar oling.",
+    "telegramConnected": "✓ Telegram ulangan",
+    "telegramNotConfigured": "Telegram bot serverda sozlanmagan.",
+    "telegramLinkHint": "Havolani Telegram'da oching va Start tugmasini bosing — bot chatingizni bog'laydi.",
+    "telegramGenerateLink": "Havola yaratish",
+    "telegramRegenerateLink": "Yangi havola",
+    "telegramDisconnect": "Uzish",
+    "telegramCopy": "Nusxalash",
+    "telegramCopied": "Nusxalandi ✓",
+    "telegramOpen": "Telegram'da ochish"
   },
   "ordersExtra": {
     "dateFrom": "Sanadan",

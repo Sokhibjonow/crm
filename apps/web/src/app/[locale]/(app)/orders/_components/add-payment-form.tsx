@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 import { ApiError } from '@/lib/api';
 import { addOrderPayment, type Order, type PaymentMethod } from '@/lib/orders';
 
@@ -43,6 +44,7 @@ export function AddPaymentForm({ order, onAdded }: Props) {
       onAdded(updated);
       setAmount('');
       setReference('');
+      toast.success(t('addPayment'));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : tAuth('errorGeneric'));
     } finally {

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { ApiError } from '@/lib/api';
 import {
   type AuthUser,
@@ -9,6 +10,7 @@ import {
   getCurrentUser,
   updateProfile,
 } from '@/lib/auth';
+import { OwnerTelegramSection } from './_components/owner-telegram-section';
 
 export default function ProfileSettingsPage() {
   const t = useTranslations('settings');
@@ -55,8 +57,10 @@ export default function ProfileSettingsPage() {
       });
       setUser(updated);
       setSaved(true);
+      toast.success(t('saved'));
     } catch {
       setError(tAuth('errorGeneric'));
+      toast.error(tAuth('errorGeneric'));
     } finally {
       setSaving(false);
     }
@@ -72,6 +76,7 @@ export default function ProfileSettingsPage() {
       setPwOk(true);
       setCurrentPassword('');
       setNewPassword('');
+      toast.success(t('passwordChanged'));
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setPwError(t('errorWrongPassword'));
@@ -185,6 +190,8 @@ export default function ProfileSettingsPage() {
           </div>
         </form>
       </section>
+
+      <OwnerTelegramSection />
     </main>
   );
 }
